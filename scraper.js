@@ -1388,6 +1388,234 @@ async function scrapeEstonia() {
   return itemsCollected;
 }
 
+// 12. Scrape Hungary (Stipendium Hungaricum Portal)
+async function scrapeHungary() {
+  console.log('--- Scraping Hungary (DreamApply) ---');
+  let itemsCollected = [];
+
+  try {
+    console.log('[Hungary] Fetching homepage to initialize session...');
+    const response = await fetch('https://apply.stipendiumhungaricum.hu/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+      }
+    });
+    const cookieHeaders = response.headers.getSetCookie();
+    const cookies = cookieHeaders.map(c => c.split(';')[0]).join('; ');
+
+    console.log('[Hungary] Sending POST to start search session...');
+    const body = new URLSearchParams();
+    body.append('ir', 'all');
+    body.append('lang[]', 'en'); // English
+
+    const postResponse = await fetch('https://apply.stipendiumhungaricum.hu/courses/results', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': cookies,
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+        'Referer': 'https://apply.stipendiumhungaricum.hu/courses/search',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json, text/javascript, */*; q=0.01'
+      },
+      body: body.toString()
+    });
+
+    if (!postResponse.ok) {
+      throw new Error(`[Hungary] POST failed with status: ${postResponse.status}`);
+    }
+
+    const json = await postResponse.json();
+    const sessionId = json.search;
+    console.log(`[Hungary] Active Session ID: ${sessionId}`);
+
+    let html = json.results || '';
+    
+    // Determine total results and page count
+    let totalCount = 1040; // Fallback
+    const countMatch = html.match(/class="value">\s*(\d+)\s*<\/div>/);
+    if (countMatch) {
+      totalCount = parseInt(countMatch[1]);
+      console.log(`[Hungary] Found total courses count: ${totalCount}`);
+    }
+
+    const itemsPerPage = 50;
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    console.log(`[Hungary] Total pages to fetch: ${totalPages}`);
+
+    // Parse function for HTML page content
+    const parsePage = (pageHtml) => {
+      const segments = pageHtml.split(/<div\s+[^>]*class="[^"]*result[^"]*segment[^"]*"/);
+      for (let i = 1; i < segments.length; i++) {
+        const seg = segments[i];
+        
+        let title = '';
+        let relativeLink = '';
+        const titleUrlMatch = seg.match(/<a\s+[^>]*href="([^"]*\/courses\/course\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+        if (titleUrlMatch) {
+          relativeLink = titleUrlMatch[1].trim();
+          const qIdx = relativeLink.indexOf('?');
+          if (qIdx !== -1) {
+            relativeLink = relativeLink.substring(0, qIdx);
+          }
+          title = cleanText(titleUrlMatch[2]);
+        }
+        
+        let university = 'Unknown University';
+        const uniIconMatch = seg.match(/university\s+icon[^>]*>[\s\S]*?<a\s+[^>]*>([\s\S]*?)<\/a>/i);
+        if (uniIconMatch) {
+          university = cleanText(uniIconMatch[1]);
+        } else {
+          const fallbackUniMatch = seg.match(/class="[^"]*four\s+wide\s+column[^"]*"[\s\S]*?<a\s+href="[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
+          if (fallbackUniMatch) {
+            university = cleanText(fallbackUniMatch[1]);
+          }
+        }
+        
+        let location = 'Hungary';
+        const locMatch = seg.match(/<small\s+class="ui\s+computer\s+tablet\s+only[^"]*">([\s\S]*?)<\/small>/i);
+        if (locMatch) {
+          const fullLoc = cleanText(locMatch[1]);
+          const parts = fullLoc.split(',');
+          if (parts.length > 1) {
+            location = parts[1].trim();
+          } else {
+            location = fullLoc;
+          }
+        }
+        
+        let degree = 'Unknown';
+        const degMatch = seg.match(/<span\s+class="ui\s+tiny\s+awards\s+label"[^>]*>([\s\S]*?)<\/span>/i);
+        if (degMatch) {
+          degree = cleanText(degMatch[1]);
+        }
+        let stdDegree = 'Other';
+        const degLower = degree.toLowerCase();
+        if (degLower.includes('bachelor') || degLower === 'ba' || degLower === 'bsc') {
+          stdDegree = 'Bachelor';
+        } else if (degLower.includes('master') || degLower === 'ma' || degLower === 'msc' || degLower === 'mba') {
+          stdDegree = 'Master';
+        } else if (degLower.includes('phd') || degLower.includes('doctoral') || degLower === 'ph.d.') {
+          stdDegree = 'PhD';
+        } else {
+          stdDegree = degree;
+        }
+        
+        let duration = 'Unknown';
+        let studyMode = 'In Person';
+        let tuitionFee = 'Varies';
+        let semesterStart = 'Autumn (September)';
+        
+        const smallRegex = /<small[^>]*>([\s\S]*?)<\/small>/gi;
+        let sMatch;
+        const smallTexts = [];
+        while ((sMatch = smallRegex.exec(seg)) !== null) {
+          smallTexts.push(cleanText(sMatch[1]));
+        }
+        
+        for (const st of smallTexts) {
+          if (st.startsWith('Tuition fee:')) {
+            tuitionFee = st.replace('Tuition fee:', '').trim();
+            if (tuitionFee.toUpperCase() === 'FREE') {
+              tuitionFee = 'Free';
+            }
+          } else if (!st.includes(':') && !st.includes('Faculty') && !st.includes(location) && st !== 'Hungary' && st !== 'Estonia' && (st.includes('full') || st.includes('part') || st.includes('year') || st.includes('semester') || st.includes('month'))) {
+            const parts = st.split(',');
+            if (parts.length >= 3) {
+              studyMode = parts[1].trim();
+              duration = parts[2].trim();
+            } else if (parts.length === 2) {
+              studyMode = parts[0].trim();
+              duration = parts[1].trim();
+            } else {
+              duration = st;
+            }
+          }
+        }
+        
+        if (studyMode.toLowerCase().includes('full')) {
+          studyMode = 'In Person (Full-Time)';
+        } else if (studyMode.toLowerCase().includes('part')) {
+          studyMode = 'In Person (Part-Time)';
+        }
+        
+        if (duration.includes('semesters')) {
+          const semsMatch = duration.match(/(\d+)\s+semesters/);
+          if (semsMatch) {
+            const sems = parseInt(semsMatch[1]);
+            const years = Math.round((sems / 2) * 10) / 10;
+            duration = `${years} year${years === 1 ? '' : 's'} (${sems} semesters)`;
+          }
+        }
+        
+        const startMatch = seg.match(/class="[^"]*inline\s+label"[^>]*>([\s\S]*?)<\/span>/i);
+        if (startMatch) {
+          semesterStart = cleanText(startMatch[1]);
+        }
+        
+        itemsCollected.push({
+          id: `hungary_${relativeLink.replace(/[^a-zA-Z0-9]/g, '_')}`,
+          title,
+          university,
+          degree: stdDegree,
+          location,
+          duration,
+          studyMode,
+          deadlines: [],
+          link: relativeLink ? 'https://apply.stipendiumhungaricum.hu' + relativeLink : '',
+          logo: '',
+          country: 'Hungary',
+          tuitionFee,
+          semesterStart
+        });
+      }
+    };
+
+    // Parse page 1
+    console.log('[Hungary] Parsing page 1...');
+    parsePage(html);
+    console.log(`[Hungary] Collected ${itemsCollected.length} / ${totalCount}`);
+
+    // Fetch subsequent pages
+    for (let page = 2; page <= totalPages; page++) {
+      console.log(`[Hungary] Fetching page ${page}...`);
+      const pageBody = new URLSearchParams();
+      pageBody.append('page', page.toString());
+
+      const pageResponse = await fetch(`https://apply.stipendiumhungaricum.hu/courses/results/id/${sessionId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Cookie': cookies,
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+          'Referer': `https://apply.stipendiumhungaricum.hu/courses/search/id/${sessionId}`,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json, text/javascript, */*; q=0.01'
+        },
+        body: pageBody.toString()
+      });
+
+      if (!pageResponse.ok) {
+        console.error(`[Hungary] Failed to fetch page ${page}: status ${pageResponse.status}`);
+        break;
+      }
+
+      const pageJson = await pageResponse.json();
+      const pageHtml = pageJson.results || '';
+      parsePage(pageHtml);
+      console.log(`[Hungary] Collected ${itemsCollected.length} / ${totalCount}`);
+
+      // Polite sleep between pages
+      await sleep(DELAY_MS);
+    }
+  } catch (error) {
+    console.error('[Hungary] Error during scraping:', error);
+  }
+
+  console.log(`[Hungary] Complete. Total: ${itemsCollected.length}`);
+  return itemsCollected;
+}
+
 // Main aggregate function
 async function scrapeAll() {
   console.log('Starting European English-taught programs crawler...');
@@ -1436,6 +1664,10 @@ async function scrapeAll() {
 
     const estonia = await scrapeEstonia();
     allPrograms = allPrograms.concat(estonia);
+    await sleep(DELAY_MS);
+
+    const hungary = await scrapeHungary();
+    allPrograms = allPrograms.concat(hungary);
 
     console.log(`\nAggregated all databases successfully. Total programs: ${allPrograms.length}`);
 
