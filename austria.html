@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+
+<html lang="en_US" data-method="post">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-param" content="_csrf">
+<meta name="csrf-token" content="fxlmbzwE4kQoO2S-VDhqTCA6wxw26-CsM41Actp5hRw9bCsjRGiXDhBJK_cCTCgGekqubwSB2M4e7nMElgPAeQ==">
+    <title>Studies in Studien - Studienwahl.at</title>
+        <link href="/assets/da192758/css/bootstrap.min.css?v=1765273773" rel="stylesheet">
+<link href="/css/main.css?v=1769681192" rel="stylesheet">
+<link href="/css/media_queries.css?v=1764680408" rel="stylesheet"></head>
+<body>
+
+<div id="wrapper">
+
+    <header>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="logo logo_studienwahl col-sm-6 col-xs-8">
+                        <a href=/en><img
+                                    src="/img/logo_studienwahl_en.png"
+                                    id="logoImg" alt="Studienwahl"></a>
+                    </div>
+
+                    <div class="logo logo-extra col-sm-6 col-xs-4">
+                        <div class="col-sm-6 col-xs-12 logo-oead">
+                                                            <a href="https://oead.at/" target="_blank">
+                                    <img src="/img/logo_oead_en.png" alt="OEAD">
+                                </a>
+                                                        </div>
+                        <div class="col-sm-6 col-xs-12 logo-bmbwf" style="margin-top: 6px;">
+                            <a href="https://www.bmfwf.gv.at/" target="_blank">
+                                <img src="/img/bmfwf_en.png" alt="BMFWF" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    <!--Custom Navbar-->
+    <nav class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+                <ul class="collapse nav navbar-nav navbar-collapse navbar-ex1-collapse">
+                        <li><a href="/programmes-in-english">Programmes in English</a></li>
+                                                            <li><a href="/Content.Node/sonstiges/Studienbeitraege.en.php">Tuition fees</a></li>
+                                                                <li><a href="/Content.Node/allgemeines/allgemeines.en.php">General information</a></li>
+                                                        <li class="li-lang text-left attachRight"><a href="/">Deutsch</a></li>
+                <li id="line"></li>
+                    </ul>
+            </div>
+</nav>
+
+    <!--Custom Navbar END-->
+    <div class="container">
+        <form id="w0" action="/studies/" method="post">
+<input type="hidden" name="_csrf" value="fxlmbzwE4kQoO2S-VDhqTCA6wxw26-CsM41Actp5hRw9bCsjRGiXDhBJK_cCTCgGekqubwSB2M4e7nMElgPAeQ==">        <div class="row">
+            <div class="col-xs-12">
+
+                <!-- BEGIN CATEGORIES -->
+                <div class="col-md-3 col-sm-12 col-xs-12 col-kategorie">
+                    <div id="categories">
+
+                        <div class="hide"><a name="wai_categories">Kategorien:</a><br>
+                        </div>
+
+                        <div class="categorie-button" id="test_btn">
+                            <a>Select category</a>
+                            <div class="dreieck"></div>
+                        </div>
+                        <ul class="categories hidden-sm hidden-xs">
+            <li class="even"><a href="/studies/art-studies/">Art Studies</a></li>
+                <li class="odd"><a href="/studies/engineering-sciences/">Engineering Sciences</a></li>
+                <li class="even"><a href="/studies/humanities/">Humanities</a></li>
+                <li class="odd"><a href="/studies/law/">Law</a></li>
+                <li class="even"><a href="/studies/medicinehealthcare/">Medicine/Healthcare</a></li>
+                <li class="odd"><a href="/studies/natural-sciences/">Natural Sciences</a></li>
+                <li class="even"><a href="/studies/social-and-economic-sciences/">Social and Economic Sciences</a></li>
+                <li class="odd"><a href="/studies/teacher-training-programmes/">Teacher Training Programmes</a></li>
+                <li class="even"><a href="/studies/theological-studies/">Theological Studies</a></li>
+        </ul>
+
+
+                    </div>
+                </div>
+                <!-- END CATEGORIES -->
+
+
+                <!-- BEGIN FILTER -->
+                <div class="col-md-3 col-md-push-6 col-sm-12 col-xs-12 col-filter">
+                    <div id="filter">
+    <div id="filter-start">
+    <div class="filter-button"><a>Filter criteria</a>
+        <div class="dreieck"></div>
+    </div>
+    <a lang="en_US" href="#" id="open-selection">Define filter criteria for categories & full-text search:</a>
+    </div>
+    <div id="mycriteria" class="hidden-xs hidden-sm hidden">
+        <div class="filter-button"><span>Your filter criteria</span>
+            <div class="dreieck"></div>
+        </div>
+
+
+        <div id="selected">
+            <div id="selectedID"></div>
+            <!-- p class="empty">You have not selected any criteria at present.</p -->
+            <a id="reset-button" href="/en"></a>
+            <div id="mycriteria-footer">
+                <a lang="en_US" id="reopen-selection" href="#">Filterkriterien festlegen für Kategorien &amp;amp; Volltextsuche:</a>
+            </div>
+        </div>
+    </div>
+    
+        <div id="selection" class="hidden">
+
+            <div id="criteria">
+                <h2>Filter criteria</h2>
+                <p>Here you can define your filter criteria for categories + full-text search. You can change them at any time.</p>
+                <div id="sel-1" class="col-xs-12 col-md-3">
+                    <fieldset class="place">
+                        <legend>Location</legend>
+                        <div class="mb-3 field-studysearchform-ort">
+<div id="studysearchform-ort"><div class="checkbox"><label for="ort1"><input type="checkbox" id="ort1" name="StudySearchForm[ort][]" value="1"> Burgenland</label></div>
+<div class="checkbox"><label for="ort2"><input type="checkbox" id="ort2" name="StudySearchForm[ort][]" value="2"> Carinthia</label></div>
+<div class="checkbox"><label for="ort3"><input type="checkbox" id="ort3" name="StudySearchForm[ort][]" value="3"> Lower Austria</label></div>
+<div class="checkbox"><label for="ort4"><input type="checkbox" id="ort4" name="StudySearchForm[ort][]" value="4"> Upper Austria</label></div>
+<div class="checkbox"><label for="ort5"><input type="checkbox" id="ort5" name="StudySearchForm[ort][]" value="5"> Salzburg</label></div>
+<div class="checkbox"><label for="ort6"><input type="checkbox" id="ort6" name="StudySearchForm[ort][]" value="6"> Styria</label></div>
+<div class="checkbox"><label for="ort7"><input type="checkbox" id="ort7" name="StudySearchForm[ort][]" value="7"> Tyrol</label></div>
+<div class="checkbox"><label for="ort8"><input type="checkbox" id="ort8" name="StudySearchForm[ort][]" value="8"> Vorarlberg</label></div>
+<div class="checkbox"><label for="ort9"><input type="checkbox" id="ort9" name="StudySearchForm[ort][]" value="9"> Vienna</label></div></div>
+</div>                    </fieldset>
+                    <fieldset class="place">
+                        <legend>Type of course</legend>
+                        <div class="mb-3 field-studysearchform-orgform">
+<div id="studysearchform-orgform"><div class="checkbox"><label for="orgform0"><input type="checkbox" id="orgform0" name="StudySearchForm[orgform][]" value="0"> Full-time</label></div>
+<div class="checkbox"><label for="orgform1"><input type="checkbox" id="orgform1" name="StudySearchForm[orgform][]" value="1"> Extra-occupational</label></div>
+<div class="checkbox"><label for="orgform2"><input type="checkbox" id="orgform2" name="StudySearchForm[orgform][]" value="2"> Distance learning course</label></div></div>
+</div>                    </fieldset>
+                </div>
+                <div id="sel-2" class="col-xs-12 col-md-6">
+                    <fieldset class="studytype">
+                        <legend>Type of degree programme</legend>
+                        <div class="col col-sm-6 col-xs-12  TYPE-COL-2">
+                            <div class="mb-3 field-studysearchform-type">
+<div id="studysearchform-type"><div class="checkbox"><label for="type2"><input type="checkbox" id="type2" name="StudySearchForm[type][]" value="2"> Bachelor’s programme</label></div>
+<div class="checkbox"><label for="type3"><input type="checkbox" id="type3" name="StudySearchForm[type][]" value="3"> Diploma programme</label></div>
+<div class="checkbox"><label for="type4"><input type="checkbox" id="type4" name="StudySearchForm[type][]" value="4"> PhD/Doctoral programme</label></div>
+<div class="checkbox"><label for="type6"><input type="checkbox" id="type6" name="StudySearchForm[type][]" value="6"> University course</label></div>
+<div class="checkbox"><label for="type8"><input type="checkbox" id="type8" name="StudySearchForm[type][]" value="8"> Bachelor Professional</label></div>
+<div class="checkbox"><label for="type16"><input type="checkbox" id="type16" name="StudySearchForm[type][]" value="16"> Bachelor's programme (Continuing Education)</label></div>
+<div class="checkbox"><label for="type11"><input type="checkbox" id="type11" name="StudySearchForm[type][]" value="11"> Master’s course</label></div>
+<div class="checkbox"><label for="type12"><input type="checkbox" id="type12" name="StudySearchForm[type][]" value="12"> Master’s programme</label></div>
+</div></div></div><div class="col col-sm-6 col-xs-12 TYPE-COL-2"><div class="form-group field-studysearchform-type"><div id="studysearchform-type"><div class="checkbox"><label for="type13"><input type="checkbox" id="type13" name="StudySearchForm[type][]" value="13"> Master’s programme,<br> also for teacher training</label></div>
+<div class="checkbox"><label for="type21"><input type="checkbox" id="type21" name="StudySearchForm[type][]" value="21"> Teacher training:<br> Bachelor’s programme</label></div>
+<div class="checkbox"><label for="type23"><input type="checkbox" id="type23" name="StudySearchForm[type][]" value="23"> PhD programme</label></div>
+<div class="checkbox"><label for="type24"><input type="checkbox" id="type24" name="StudySearchForm[type][]" value="24"> Extended programme</label></div>
+<div class="checkbox"><label for="type25"><input type="checkbox" id="type25" name="StudySearchForm[type][]" value="25"> Master Professional</label></div>
+<div class="checkbox"><label for="type26"><input type="checkbox" id="type26" name="StudySearchForm[type][]" value="26"> Master's programme (Continuing Education)</label></div></div>
+</div>                        </div>
+                    </fieldset>
+                                            <fieldset class="studytype">
+                            <legend>Other</legend>
+                            <div class="mb-3 field-studysearchform-other">
+<div id="studysearchform-other"><div class="checkbox"><label for="other7"><input type="checkbox" id="other7" name="StudySearchForm[other][]" value="7"> Individually designed degree programme</label></div>
+<div class="checkbox"><label for="other9"><input type="checkbox" id="other9" name="StudySearchForm[other][]" value="9"> Licentiate programme</label></div>
+<div class="checkbox"><label for="other15"><input type="checkbox" id="other15" name="StudySearchForm[other][]" value="15"> University college course</label></div>
+<div class="checkbox"><label for="other19"><input type="checkbox" id="other19" name="StudySearchForm[other][]" value="19"> Erasmus Mundus</label></div>
+<div class="checkbox"><label for="other20"><input type="checkbox" id="other20" name="StudySearchForm[other][]" value="20"> Joint / Double Degree</label></div>
+<div class="checkbox"><label for="other22"><input type="checkbox" id="other22" name="StudySearchForm[other][]" value="22"> Teacher training:<br> Master’s programme</label></div></div>
+</div>                        </fieldset>
+                        
+                    <fieldset class="locations">
+                        <div class="col col-sm-12 col-xs-12 TYPE-COL-2">
+                            <legend>Educational Institution</legend>
+                                                        <div class="mb-3 field-helperDropDownBildungseinrichtung">
+<select id="helperDropDownBildungseinrichtung" class="form-control form-select" name="helperDropDownBildungseinrichtung">
+<option value="0">--- please select ---</option>
+<option value="13">Akademie der bildenden Künste Wien (Wien)</option>
+<option value="27">Anton-Bruckner-Privatuniversität Linz (Linz)</option>
+<option value="96">Bertha von Suttner Privatuniversität (St. Pölten)</option>
+<option value="58">Campus 02 Fachhochschule der Wirtschaft GmbH(Graz)</option>
+<option value="102">Central European University Private University (Wien)</option>
+<option value="33">Danube Privat University (Krems an der Donau)</option>
+<option value="59">Fachhochschule des BFI Wien GmbH (Wien)</option>
+<option value="61">Fachhochschule für angewandte Militärwissenschaften (Wiener Neustadt)</option>
+<option value="48">Fachhochschule Kärnten (Feldkirchen)</option>
+<option value="49">Fachhochschule Kärnten (Klagenfurt)</option>
+<option value="50">Fachhochschule Kärnten (Spittal an der Drau)</option>
+<option value="51">Fachhochschule Kärnten (Villach)</option>
+<option value="55">Fachhochschule Salzburg GmbH (Kuchl)</option>
+<option value="56">Fachhochschule Salzburg GmbH (Puch)</option>
+<option value="105">Fachhochschule Salzburg GmbH (Salzburg)</option>
+<option value="106">Fachhochschule Salzburg GmbH (Schwarzach im Pongau)</option>
+<option value="43">Fachhochschule Technikum Wien (Wien)</option>
+<option value="42">Fachhochschule Vorarlberg GmbH (Dornbirn)</option>
+<option value="45">Fachhochschule Wiener Neustadt GmbH (Tulln)</option>
+<option value="46">Fachhochschule Wiener Neustadt GmbH (Wiener Neustadt)</option>
+<option value="47">Fachhochschule Wiener Neustadt GmbH (Wieselburg)</option>
+<option value="66">Ferdinand Porsche Fernfachhochschule GmbH (Wiener Neustadt)</option>
+<option value="67">FH Gesundheitsberufe OÖ GmbH (Linz)</option>
+<option value="107">FH Gesundheitsberufe OÖ GmbH (Ried)</option>
+<option value="108">FH Gesundheitsberufe OÖ GmbH (Steyr)</option>
+<option value="110">FH Gesundheitsberufe OÖ GmbH (Vöcklabruck)</option>
+<option value="109">FH Gesundheitsberufe OÖ GmbH (Wels)</option>
+<option value="52">FH JOANNEUM GmbH (Bad Gleichenberg)</option>
+<option value="53">FH JOANNEUM GmbH (Graz)</option>
+<option value="54">FH JOANNEUM GmbH (Kapfenberg)</option>
+<option value="62">FH Kufstein Tirol Bildungs GmbH (Kufstein)</option>
+<option value="37">FH OÖ Studienbetriebs GmbH (Hagenberg)</option>
+<option value="38">FH OÖ Studienbetriebs GmbH (Linz)</option>
+<option value="39">FH OÖ Studienbetriebs GmbH (Steyr)</option>
+<option value="40">FH OÖ Studienbetriebs GmbH (Wels)</option>
+<option value="65">fhg - Zentrum für Gesundheitsberufe Tirol GmbH (Innsbruck)</option>
+<option value="41">FHW-Fachhochschul-Studiengänge Betriebs- und Forschungseinrichtungen der Wiener Wirtschaft GmbH (Wien)</option>
+<option value="101">Gustav Mahler Privatuniversität für Musik (Klagenfurt)</option>
+<option value="83">Hochschule für Agrar- und Umweltpädagogik (Wien)</option>
+<option value="35">Hochschule für Angewandte Wissenschaften Burgenland (Eisenstadt)</option>
+<option value="36">Hochschule für Angewandte Wissenschaften Burgenland (Pinkafeld)</option>
+<option value="63">Hochschule für Angewandte Wissenschaften Campus Wien (Wien)</option>
+<option value="44">IMC Krems University of Applied Sciences (Krems an der Donau)</option>
+<option value="86">Institute of Science and Technology – Austria (Klosterneuburg)</option>
+<option value="115">IT:U Interdisciplinary Transformation University Austria</option>
+<option value="95">JAM MUSIC LAB Private University for Jazz and Popular Music Vienna (Wien)</option>
+<option value="114">Joseph Haydn Privathochschule (Eisenstadt)</option>
+<option value="84">Karl Landsteiner Privatuniversität für Gesundheitswissenschaften GmbH (Krems an der Donau)</option>
+<option value="22">Katholische Privat-Universität Linz (Linz)</option>
+<option value="77">Kirchliche Pädagogische Hochschule Edith-Stein (Feldkirch)</option>
+<option value="78">Kirchliche Pädagogische Hochschule Edith-Stein (Innsbruck)</option>
+<option value="111">Kirchliche Pädagogische Hochschule Edith-Stein (Salzburg)</option>
+<option value="79">Kirchliche Pädagogische Hochschule Edith-Stein (Stams)</option>
+<option value="82">Kirchliche Pädagogische Hochschule Wien/Krems (Krems an der Donau)</option>
+<option value="21">Kunstuniversität Linz (Linz)</option>
+<option value="64">Lauder Business School (Wien)</option>
+<option value="60">MCI – Die Unternehmerische Hochschule (Innsbruck)</option>
+<option value="5">Medizinische Universität Graz (Graz)</option>
+<option value="2">Medizinische Universität Innsbruck (Innsbruck)</option>
+<option value="12">Medizinische Universität Wien (Wien)</option>
+<option value="31">MODUL University Vienna Private University (Wien)</option>
+<option value="19">Montanuniversität Leoben (Leoben)</option>
+<option value="29">Musik und Kunst Privatuniversität der Stadt Wien (MUK) (Wien)</option>
+<option value="28">New Design University Privatuniversität (St. Pölten)</option>
+<option value="69">Pädagogische Hochschule Kärnten (Klagenfurt)</option>
+<option value="70">Pädagogische Hochschule Niederösterreich (Baden)</option>
+<option value="71">Pädagogische Hochschule Oberösterreich (Linz)</option>
+<option value="73">Pädagogische Hochschule Salzburg Stefan Zweig (Salzburg)</option>
+<option value="74">Pädagogische Hochschule Steiermark (Graz)</option>
+<option value="76">Pädagogische Hochschule Tirol (Innsbruck)</option>
+<option value="80">Pädagogische Hochschule Vorarlberg (Feldkirch)</option>
+<option value="81">Pädagogische Hochschule Wien (Wien)</option>
+<option value="25">Paracelsus Medizinische Privatuniversität (Salzburg)</option>
+<option value="104">Philosophisch-Theologische Hochschule Benedikt XVI. Heiligenkreuz (Heiligenkreuz im Wienerwald)</option>
+<option value="75">Private Pädagogische Hochschule Augustinum (Graz)</option>
+<option value="72">Private Pädagogische Hochschule der Diözese Linz (Linz)</option>
+<option value="68">Private Pädagogische Hochschule Stiftung Burgenland (Eisenstadt)</option>
+<option value="32">Privatuniversität Schloss Seeburg (Seekirchen am Wallersee)</option>
+<option value="30">Sigmund Freud PrivatUniversität Wien (Wien)</option>
+<option value="113">Stella Vorarlberg Privathochschule für Musik GmbH (Feldkirch)</option>
+<option value="6">Technische Universität Graz (Graz)</option>
+<option value="8">Technische Universität Wien (Wien)</option>
+<option value="24">UMIT Tirol - Private Universität für Gesundheitswissenschaften und -technologie GmbH (Hall in Tirol)</option>
+<option value="15">Universität für angewandte Kunst Wien (Wien)</option>
+<option value="10">Universität für Bodenkultur Wien (BOKU) (Wien)</option>
+<option value="4">Universität für Musik und darstellende Kunst Graz (Graz)</option>
+<option value="14">Universität für Musik und darstellende Kunst Wien (Wien)</option>
+<option value="85">Universität für Weiterbildung Krems (Donau-Universität Krems) (Krems an der Donau)</option>
+<option value="3">Universität Graz (Graz)</option>
+<option value="1">Universität Innsbruck (Innsbruck)</option>
+<option value="18">Universität Klagenfurt (Klagenfurt)</option>
+<option value="20">Universität Linz (Linz)</option>
+<option value="17">Universität Mozarteum Salzburg (Salzburg)</option>
+<option value="16">Universität Salzburg (Salzburg)</option>
+<option value="7">Universität Wien (Wien)</option>
+<option value="57">University of Applied Sciences St. Pölten</option>
+<option value="112">University of Sustainability - Charlotte Fresenius Privatuniversität Wien</option>
+<option value="92">Verbund Mitte</option>
+<option value="93">Verbund Nord-Ost</option>
+<option value="94">Verbund Süd-Ost</option>
+<option value="91">Verbund West</option>
+<option value="11">Veterinärmedizinische Universität Wien (Wien)</option>
+<option value="26">Webster Vienna Private University (Wien)</option>
+<option value="9">Wirtschaftsuniversität Wien (Wien)</option>
+</select>
+</div>                            <div class="field-studysearchform-bildungseinrichtung" style="display: none;">
+<label class="form-label">Bildungseinrichtung</label>
+<input type="hidden" name="StudySearchForm[bildungseinrichtung]" value=""><div id="studysearchform-bildungseinrichtung"><div class="form-check">
+<input type="checkbox" id="i0" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="13">
+<label class="form-check-label" for="i0">Akademie der bildenden Künste Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i1" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="27">
+<label class="form-check-label" for="i1">Anton-Bruckner-Privatuniversität Linz (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i2" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="96">
+<label class="form-check-label" for="i2">Bertha von Suttner Privatuniversität (St. Pölten)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i3" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="58">
+<label class="form-check-label" for="i3">Campus 02 Fachhochschule der Wirtschaft GmbH(Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i4" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="102">
+<label class="form-check-label" for="i4">Central European University Private University (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i5" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="33">
+<label class="form-check-label" for="i5">Danube Privat University (Krems an der Donau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i6" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="59">
+<label class="form-check-label" for="i6">Fachhochschule des BFI Wien GmbH (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i7" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="61">
+<label class="form-check-label" for="i7">Fachhochschule für angewandte Militärwissenschaften (Wiener Neustadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i8" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="48">
+<label class="form-check-label" for="i8">Fachhochschule Kärnten (Feldkirchen)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i9" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="49">
+<label class="form-check-label" for="i9">Fachhochschule Kärnten (Klagenfurt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i10" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="50">
+<label class="form-check-label" for="i10">Fachhochschule Kärnten (Spittal an der Drau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i11" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="51">
+<label class="form-check-label" for="i11">Fachhochschule Kärnten (Villach)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i12" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="55">
+<label class="form-check-label" for="i12">Fachhochschule Salzburg GmbH (Kuchl)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i13" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="56">
+<label class="form-check-label" for="i13">Fachhochschule Salzburg GmbH (Puch)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i14" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="105">
+<label class="form-check-label" for="i14">Fachhochschule Salzburg GmbH (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i15" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="106">
+<label class="form-check-label" for="i15">Fachhochschule Salzburg GmbH (Schwarzach im Pongau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i16" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="43">
+<label class="form-check-label" for="i16">Fachhochschule Technikum Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i17" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="42">
+<label class="form-check-label" for="i17">Fachhochschule Vorarlberg GmbH (Dornbirn)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i18" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="45">
+<label class="form-check-label" for="i18">Fachhochschule Wiener Neustadt GmbH (Tulln)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i19" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="46">
+<label class="form-check-label" for="i19">Fachhochschule Wiener Neustadt GmbH (Wiener Neustadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i20" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="47">
+<label class="form-check-label" for="i20">Fachhochschule Wiener Neustadt GmbH (Wieselburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i21" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="66">
+<label class="form-check-label" for="i21">Ferdinand Porsche Fernfachhochschule GmbH (Wiener Neustadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i22" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="67">
+<label class="form-check-label" for="i22">FH Gesundheitsberufe OÖ GmbH (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i23" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="107">
+<label class="form-check-label" for="i23">FH Gesundheitsberufe OÖ GmbH (Ried)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i24" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="108">
+<label class="form-check-label" for="i24">FH Gesundheitsberufe OÖ GmbH (Steyr)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i25" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="110">
+<label class="form-check-label" for="i25">FH Gesundheitsberufe OÖ GmbH (Vöcklabruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i26" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="109">
+<label class="form-check-label" for="i26">FH Gesundheitsberufe OÖ GmbH (Wels)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i27" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="52">
+<label class="form-check-label" for="i27">FH JOANNEUM GmbH (Bad Gleichenberg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i28" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="53">
+<label class="form-check-label" for="i28">FH JOANNEUM GmbH (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i29" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="54">
+<label class="form-check-label" for="i29">FH JOANNEUM GmbH (Kapfenberg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i30" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="62">
+<label class="form-check-label" for="i30">FH Kufstein Tirol Bildungs GmbH (Kufstein)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i31" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="37">
+<label class="form-check-label" for="i31">FH OÖ Studienbetriebs GmbH (Hagenberg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i32" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="38">
+<label class="form-check-label" for="i32">FH OÖ Studienbetriebs GmbH (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i33" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="39">
+<label class="form-check-label" for="i33">FH OÖ Studienbetriebs GmbH (Steyr)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i34" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="40">
+<label class="form-check-label" for="i34">FH OÖ Studienbetriebs GmbH (Wels)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i35" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="65">
+<label class="form-check-label" for="i35">fhg - Zentrum für Gesundheitsberufe Tirol GmbH (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i36" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="41">
+<label class="form-check-label" for="i36">FHW-Fachhochschul-Studiengänge Betriebs- und Forschungseinrichtungen der Wiener Wirtschaft GmbH (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i37" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="101">
+<label class="form-check-label" for="i37">Gustav Mahler Privatuniversität für Musik (Klagenfurt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i38" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="83">
+<label class="form-check-label" for="i38">Hochschule für Agrar- und Umweltpädagogik (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i39" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="35">
+<label class="form-check-label" for="i39">Hochschule für Angewandte Wissenschaften Burgenland (Eisenstadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i40" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="36">
+<label class="form-check-label" for="i40">Hochschule für Angewandte Wissenschaften Burgenland (Pinkafeld)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i41" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="63">
+<label class="form-check-label" for="i41">Hochschule für Angewandte Wissenschaften Campus Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i42" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="44">
+<label class="form-check-label" for="i42">IMC Krems University of Applied Sciences (Krems an der Donau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i43" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="86">
+<label class="form-check-label" for="i43">Institute of Science and Technology – Austria (Klosterneuburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i44" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="115">
+<label class="form-check-label" for="i44">IT:U Interdisciplinary Transformation University Austria</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i45" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="95">
+<label class="form-check-label" for="i45">JAM MUSIC LAB Private University for Jazz and Popular Music Vienna (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i46" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="114">
+<label class="form-check-label" for="i46">Joseph Haydn Privathochschule (Eisenstadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i47" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="84">
+<label class="form-check-label" for="i47">Karl Landsteiner Privatuniversität für Gesundheitswissenschaften GmbH (Krems an der Donau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i48" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="22">
+<label class="form-check-label" for="i48">Katholische Privat-Universität Linz (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i49" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="77">
+<label class="form-check-label" for="i49">Kirchliche Pädagogische Hochschule Edith-Stein (Feldkirch)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i50" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="78">
+<label class="form-check-label" for="i50">Kirchliche Pädagogische Hochschule Edith-Stein (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i51" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="111">
+<label class="form-check-label" for="i51">Kirchliche Pädagogische Hochschule Edith-Stein (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i52" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="79">
+<label class="form-check-label" for="i52">Kirchliche Pädagogische Hochschule Edith-Stein (Stams)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i53" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="82">
+<label class="form-check-label" for="i53">Kirchliche Pädagogische Hochschule Wien/Krems (Krems an der Donau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i54" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="21">
+<label class="form-check-label" for="i54">Kunstuniversität Linz (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i55" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="64">
+<label class="form-check-label" for="i55">Lauder Business School (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i56" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="60">
+<label class="form-check-label" for="i56">MCI – Die Unternehmerische Hochschule (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i57" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="5">
+<label class="form-check-label" for="i57">Medizinische Universität Graz (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i58" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="2">
+<label class="form-check-label" for="i58">Medizinische Universität Innsbruck (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i59" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="12">
+<label class="form-check-label" for="i59">Medizinische Universität Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i60" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="31">
+<label class="form-check-label" for="i60">MODUL University Vienna Private University (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i61" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="19">
+<label class="form-check-label" for="i61">Montanuniversität Leoben (Leoben)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i62" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="29">
+<label class="form-check-label" for="i62">Musik und Kunst Privatuniversität der Stadt Wien (MUK) (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i63" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="28">
+<label class="form-check-label" for="i63">New Design University Privatuniversität (St. Pölten)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i64" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="69">
+<label class="form-check-label" for="i64">Pädagogische Hochschule Kärnten (Klagenfurt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i65" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="70">
+<label class="form-check-label" for="i65">Pädagogische Hochschule Niederösterreich (Baden)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i66" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="71">
+<label class="form-check-label" for="i66">Pädagogische Hochschule Oberösterreich (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i67" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="73">
+<label class="form-check-label" for="i67">Pädagogische Hochschule Salzburg Stefan Zweig (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i68" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="74">
+<label class="form-check-label" for="i68">Pädagogische Hochschule Steiermark (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i69" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="76">
+<label class="form-check-label" for="i69">Pädagogische Hochschule Tirol (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i70" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="80">
+<label class="form-check-label" for="i70">Pädagogische Hochschule Vorarlberg (Feldkirch)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i71" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="81">
+<label class="form-check-label" for="i71">Pädagogische Hochschule Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i72" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="25">
+<label class="form-check-label" for="i72">Paracelsus Medizinische Privatuniversität (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i73" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="104">
+<label class="form-check-label" for="i73">Philosophisch-Theologische Hochschule Benedikt XVI. Heiligenkreuz (Heiligenkreuz im Wienerwald)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i74" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="75">
+<label class="form-check-label" for="i74">Private Pädagogische Hochschule Augustinum (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i75" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="72">
+<label class="form-check-label" for="i75">Private Pädagogische Hochschule der Diözese Linz (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i76" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="68">
+<label class="form-check-label" for="i76">Private Pädagogische Hochschule Stiftung Burgenland (Eisenstadt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i77" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="32">
+<label class="form-check-label" for="i77">Privatuniversität Schloss Seeburg (Seekirchen am Wallersee)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i78" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="30">
+<label class="form-check-label" for="i78">Sigmund Freud PrivatUniversität Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i79" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="113">
+<label class="form-check-label" for="i79">Stella Vorarlberg Privathochschule für Musik GmbH (Feldkirch)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i80" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="6">
+<label class="form-check-label" for="i80">Technische Universität Graz (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i81" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="8">
+<label class="form-check-label" for="i81">Technische Universität Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i82" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="24">
+<label class="form-check-label" for="i82">UMIT Tirol - Private Universität für Gesundheitswissenschaften und -technologie GmbH (Hall in Tirol)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i83" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="15">
+<label class="form-check-label" for="i83">Universität für angewandte Kunst Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i84" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="10">
+<label class="form-check-label" for="i84">Universität für Bodenkultur Wien (BOKU) (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i85" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="4">
+<label class="form-check-label" for="i85">Universität für Musik und darstellende Kunst Graz (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i86" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="14">
+<label class="form-check-label" for="i86">Universität für Musik und darstellende Kunst Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i87" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="85">
+<label class="form-check-label" for="i87">Universität für Weiterbildung Krems (Donau-Universität Krems) (Krems an der Donau)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i88" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="3">
+<label class="form-check-label" for="i88">Universität Graz (Graz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i89" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="1">
+<label class="form-check-label" for="i89">Universität Innsbruck (Innsbruck)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i90" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="18">
+<label class="form-check-label" for="i90">Universität Klagenfurt (Klagenfurt)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i91" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="20">
+<label class="form-check-label" for="i91">Universität Linz (Linz)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i92" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="17">
+<label class="form-check-label" for="i92">Universität Mozarteum Salzburg (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i93" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="16">
+<label class="form-check-label" for="i93">Universität Salzburg (Salzburg)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i94" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="7">
+<label class="form-check-label" for="i94">Universität Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i95" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="57">
+<label class="form-check-label" for="i95">University of Applied Sciences St. Pölten</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i96" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="112">
+<label class="form-check-label" for="i96">University of Sustainability - Charlotte Fresenius Privatuniversität Wien</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i97" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="92">
+<label class="form-check-label" for="i97">Verbund Mitte</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i98" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="93">
+<label class="form-check-label" for="i98">Verbund Nord-Ost</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i99" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="94">
+<label class="form-check-label" for="i99">Verbund Süd-Ost</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i100" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="91">
+<label class="form-check-label" for="i100">Verbund West</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i101" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="11">
+<label class="form-check-label" for="i101">Veterinärmedizinische Universität Wien (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i102" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="26">
+<label class="form-check-label" for="i102">Webster Vienna Private University (Wien)</label>
+</div>
+
+<div class="form-check">
+<input type="checkbox" id="i103" class="form-check-input" name="StudySearchForm[bildungseinrichtung][]" value="9">
+<label class="form-check-label" for="i103">Wirtschaftsuniversität Wien (Wien)</label>
+<div class="invalid-feedback"></div>
+</div>
+</div>
+
+</div>                        </div>
+                    </fieldset>
+
+                </div>
+
+                <div id="sel-3" class="col-xs-12 col-md-3">
+                    <fieldset class="unitype">
+                        <legend>Type of institution</legend>
+                        <div class="mb-3 field-studysearchform-hochschule">
+<div id="studysearchform-hochschule"><div class="checkbox"><label for="hochschule1"><input type="checkbox" id="hochschule1" name="StudySearchForm[hochschule][]" value="1"> Fachhochschule</label></div>
+<div class="checkbox"><label for="hochschule3"><input type="checkbox" id="hochschule3" name="StudySearchForm[hochschule][]" value="3"> Universität</label></div>
+<div class="checkbox"><label for="hochschule4"><input type="checkbox" id="hochschule4" name="StudySearchForm[hochschule][]" value="4"> Pädagogische Hochschule</label></div>
+<div class="checkbox"><label for="hochschule5"><input type="checkbox" id="hochschule5" name="StudySearchForm[hochschule][]" value="5"> Privatuniversität</label></div>
+<div class="checkbox"><label for="hochschule6"><input type="checkbox" id="hochschule6" name="StudySearchForm[hochschule][]" value="6"> Privathochschule</label></div></div>
+</div>                    </fieldset>
+
+                    <fieldset class="abroad">
+                        <legend>Stay abroad</legend>
+                        <div class="mb-3 field-studysearchform-ausland">
+<div id="studysearchform-ausland"><div class="checkbox"><label for="ausland1"><input type="checkbox" id="ausland1" name="StudySearchForm[ausland][]" value="1"> Recommended</label></div>
+<div class="checkbox"><label for="ausland2"><input type="checkbox" id="ausland2" name="StudySearchForm[ausland][]" value="2"> Not compulsory</label></div>
+<div class="checkbox"><label for="ausland3"><input type="checkbox" id="ausland3" name="StudySearchForm[ausland][]" value="3"> Compulsory</label></div></div>
+</div>                    </fieldset>
+
+                    <fieldset class="language">
+                        <legend>Language</legend>
+                        <div class="mb-3 field-studysearchform-sprache">
+<div id="studysearchform-sprache"><div class="checkbox"><label for="sprache1"><input type="checkbox" id="sprache1" name="StudySearchForm[sprache][]" value="1"> German</label></div>
+<div class="checkbox"><label for="sprache2"><input type="checkbox" id="sprache2" name="StudySearchForm[sprache][]" value="2" checked> English</label></div>
+<div class="checkbox"><label for="sprache8"><input type="checkbox" id="sprache8" name="StudySearchForm[sprache][]" value="8"> Partly English</label></div>
+<div class="checkbox"><label for="sprache9"><input type="checkbox" id="sprache9" name="StudySearchForm[sprache][]" value="9"> other language</label></div></div>
+</div>                    </fieldset>
+                </div>
+
+                <div class="clear"></div>
+
+                <a id="close-selection" href="#">Done</a>
+
+            </div>
+        </div>
+</div>
+
+                </div>
+                <!-- END FILTER -->
+
+                <!-- BEGIN SEARCH -->
+
+                <div class="col-md-6 col-md-pull-3 col-sm-12 col-sm-pull-0 col-xs-12 col-suche ">
+
+                    <div id="search">
+                        <!--                            <label for="query">SUCHE</label>-->
+                        <!--                            <input type="text" placeholder="Suchbegriff eingeben ..." class="text_l" id="query" name="q" value="">-->
+                        <div class="mb-3 field-studysearchform-q">
+<label class="form-label" for="studysearchform-q">Search</label>
+<input type="text" id="studysearchform-q" class="form-control" name="StudySearchForm[q]" value="" maxlength="100">
+
+<div class="invalid-feedback"></div>
+</div>                        <input type="button" class="submit" value="Search">
+                        <a id="resetQ" href="">Volltextsuche zurücksetzen</a>
+                        <div class="clear"></div>
+                    </div>
+                                        <!-- BEGIN CONTENT -->
+                    <div class="col-up">
+                        
+<div class="" id="results">
+        <div class="search-header">
+        <p>Your search resulted in            <b>578</b> hits in the category            <b><span>Studies</span></b>.</p>
+            <p style="font-size: 18px; margin-top: 10px;"><a href="/en">Reset search</a></p>
+    </div>
+
+    <div class="pagination col-xs-12 col-lg-10 col-xxl-8 offset-xxl-2 offset-lg-1"><ul class="pagination"><li class="prev disabled"><span>Back <i class="fa fa-angle-left" aria-hidden="true"></i></span></li>
+<li class="active"><a href="/studies/?page=1&amp;per-page=10" data-page="0">1</a></li>
+<li><a href="/studies/?page=2&amp;per-page=10" data-page="1">2</a></li>
+<li><a href="/studies/?page=3&amp;per-page=10" data-page="2">3</a></li>
+<li><a href="/studies/?page=4&amp;per-page=10" data-page="3">4</a></li>
+<li><a href="/studies/?page=5&amp;per-page=10" data-page="4">5</a></li>
+<li class="next"><a href="/studies/?page=2&amp;per-page=10" data-page="1"><i class="fa fa-angle-right" aria-hidden="true"></i> More</a></li></ul></div>
+    <h2>
+        <span>Studies</span>
+    </h2>
+
+    <div id="courses">
+        <!-- item -->
+
+                    <div class="course even">
+                <h2>Cultural and Social Anthropology                                    </h2>
+                                <p>
+                    Universität Wien                </p>
+                <b>Bachelor’s programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/humanities/education-and-social-sciences/cultural-anthropology-and-social-anthropology-ethnology/624-cultural-and-social-anthropology-0-0.en.html">More</a></p>
+            </div>
+                        <div class="course odd">
+                <h2>Applied Geosciences                                    </h2>
+                                <p>
+                    Montanuniversität Leoben                </p>
+                <b>Master’s programme » Leoben</b>
+                                <p class="kurzinfo"> <a href="/studies/engineering-sciences/mining-sciences/applied-geosciences/34-applied-geosciences-12-3-leoben.en.html">More</a></p>
+            </div>
+                        <div class="course even">
+                <h2>Green Marketing & Sustainability Communication                                    </h2>
+                                <p>
+                    Fachhochschule Wiener Neustadt GmbH                </p>
+                <b>Master’s programme » Wieselburg</b>
+                                <p class="kurzinfo"> <a href="/studies/humanities/information/journalism-and-communication-studies/2375-green-marketing-sustainability-communication-12-1-wieselburg.en.html">More</a></p>
+            </div>
+                        <div class="course odd">
+                <h2>PhD-in-Practice                                    </h2>
+                                <p>
+                    Akademie der bildenden Künste Wien                </p>
+                <b>PhD/Doctoral programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/humanities/phd/479-phd-in-practice-4-3-wien.en.html">More</a></p>
+            </div>
+                        <div class="course even">
+                <h2>International Tourism Management                                    </h2>
+                                <p>
+                    MODUL University Vienna Private University                </p>
+                <b>Master’s programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/social-and-economic-sciences/tourism/2034-international-tourism-management-12-5-wien.en.html">More</a></p>
+            </div>
+                        <div class="course odd">
+                <h2>Computer Science                                    </h2>
+                                <p>
+                    Universität Wien                </p>
+                <b>Master’s programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/engineering-sciences/computer-sciences/2936-computer-science-12-3-wien.en.html">More</a></p>
+            </div>
+                        <div class="course even">
+                <h2>JIMP in Sustainable Development                                    </h2>
+                                <p>
+                    Universität Graz                </p>
+                <b>Master’s programme » Graz</b>
+                                <p class="kurzinfo"><p>-</p><br /> <a href="/studies/natural-sciences/geosciences-studies/environmental-systems-sciences/1034-jimp-in-sustainable-development-0-0.en.html">More</a></p>
+            </div>
+                        <div class="course odd">
+                <h2>Business Informatics                                    </h2>
+                                <p>
+                    Technische Universität Wien                </p>
+                <b>Master’s programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/social-and-economic-sciences/economics/business-informatics/1151-business-informatics-12-3-wien.en.html">More</a></p>
+            </div>
+                        <div class="course even">
+                <h2>Culture and Society of Modern South Asia                                    </h2>
+                                <p>
+                    Universität Wien                </p>
+                <b>Master’s programme » Wien</b>
+                                <p class="kurzinfo"> <a href="/studies/humanities/languages-and-philological-cultural-studies-non-european/south-asian-studies/2638-culture-and-society-of-modern-south-asia-12-3-wien.en.html">More</a></p>
+            </div>
+                        <div class="course odd">
+                <h2>Geography                                    </h2>
+                                <p>
+                    Universität Innsbruck                </p>
+                <b>PhD/Doctoral programme » Innsbruck</b>
+                                <p class="kurzinfo"> <a href="/studies/natural-sciences/phd/184-geography-4-3-innsbruck.en.html">More</a></p>
+            </div>
+            
+
+    </div>
+
+    <div class="pagination col-xs-12 col-lg-10 col-xxl-8 offset-xxl-2 offset-lg-1"><ul class="pagination"><li class="prev disabled"><span>Back <i class="fa fa-angle-left" aria-hidden="true"></i></span></li>
+<li class="active"><a href="/studies/?page=1&amp;per-page=10" data-page="0">1</a></li>
+<li><a href="/studies/?page=2&amp;per-page=10" data-page="1">2</a></li>
+<li><a href="/studies/?page=3&amp;per-page=10" data-page="2">3</a></li>
+<li><a href="/studies/?page=4&amp;per-page=10" data-page="3">4</a></li>
+<li><a href="/studies/?page=5&amp;per-page=10" data-page="4">5</a></li>
+<li class="next"><a href="/studies/?page=2&amp;per-page=10" data-page="1"><i class="fa fa-angle-right" aria-hidden="true"></i> More</a></li></ul></div></div>
+
+                    </div>
+                    <!-- END CONTENT -->
+                </div>
+
+                <!-- END SEARCH -->
+
+                
+            </div>
+        </div>
+        </form>    </div>
+</div>
+
+
+<div id="footer">
+    <ul>
+        <li><a href="/Content.Node/-SWAT--Impressum.en.php">Imprint</a></li>
+        <li><a href="https://www.bmfwf.gv.at/datenschutz.html" target="_blank">Data protection</a></li>
+        <li><a href="/Content.Node/barrierefreiheitserklaerung.en.php">Accessibility Statement (in German)</a></li>
+        <li class="last"><a href="/Content.Node/-SWAT--Contact.en.php">Contact</a></li>
+    </ul>
+</div>
+<script src="/assets/c47040e6/jquery.min.js?v=1765273773"></script>
+<script src="/assets/da192758/js/bootstrap.min.js?v=1765273773"></script>
+<script src="/js/bundle.js?v=1765273544"></script>
+<script src="/js/custom.js?v=1764680426"></script>
+<script src="/assets/ad3317be/yii.js?v=1765273991"></script>
+<script src="/assets/ad3317be/yii.validation.js?v=1765273991"></script>
+<script src="/assets/ad3317be/yii.activeForm.js?v=1765273991"></script>
+<script>jQuery(function ($) {
+jQuery('#w0').yiiActiveForm([{"id":"studysearchform-q","name":"q","container":".field-studysearchform-q","input":"#studysearchform-q","error":".invalid-feedback","validate":function (attribute, value, messages, deferred, $form) {yii.validation.string(value, messages, {"message":"Search must be a string.","max":100,"tooLong":"Search should contain at most 100 characters.","skipOnEmpty":1});}}], {"errorSummary":".alert.alert-danger","errorCssClass":"is-invalid","successCssClass":"is-valid","validationStateOn":"input"});
+});</script></body>
+</html>

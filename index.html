@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>European English-Taught Programs Explorer - Free Search & Shortlist</title>
+  <meta name="description" content="Explore 10,400+ free English-taught Bachelor, Master, and PhD programs in Germany, Greece, Italy, Sweden, Finland, France, Denmark, Austria, and Czechia. Filter by country, city, degree, and study mode, and export your curated shortlist to CSV.">
+  
+  <!-- Google Fonts: Inter and Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for modern visuals -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-mode">
+
+  <!-- Main App Container -->
+  <div class="app-layout">
+    
+    <!-- Top Navigation / Hero Section -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo-area">
+          <i class="fa-solid fa-graduation-cap logo-icon"></i>
+          <div>
+            <h1 class="main-title">EduBridge <span class="gradient-text">Europe</span></h1>
+            <p class="subtitle">Empowering students from developing countries with access to English-taught world-class education</p>
+          </div>
+        </div>
+        
+        <!-- Live Stats Banner -->
+        <div class="stats-banner" id="stats-banner">
+          <div class="stat-item">
+            <span class="stat-value" id="stat-total-programs">0</span>
+            <span class="stat-label">Programs Available</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-total-universities">0</span>
+            <span class="stat-label">Universities</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-total-locations">0</span>
+            <span class="stat-label">Cities</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="stat-total-countries">0</span>
+            <span class="stat-label">Countries</span>
+          </div>
+        </div>
+
+        <!-- Shortlist Trigger -->
+        <button id="btn-bookmark-drawer-toggle" class="btn btn-primary btn-drawer-toggle" aria-label="Open shortlist">
+          <i class="fa-solid fa-star"></i>
+          <span>My Shortlist</span>
+          <span class="badge" id="shortlist-count">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="app-main">
+      
+      <!-- Left Search & Filter Sidebar -->
+      <aside class="sidebar" id="sidebar-filters">
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-magnifying-glass"></i> Search</h2>
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search courses, universities, or cities..." autocomplete="off">
+            <i class="fa-solid fa-circle-xmark clear-search-icon" id="btn-clear-search" style="display: none;"></i>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-arrow-down-a-z"></i> Sort Results</h2>
+          <select id="select-sort" class="form-select">
+            <option value="default">Default Relevance</option>
+            <option value="title-asc">Program Name (A to Z)</option>
+            <option value="title-desc">Program Name (Z to A)</option>
+            <option value="uni-asc">University (A to Z)</option>
+            <option value="uni-desc">University (Z to A)</option>
+          </select>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-globe"></i> Country</h2>
+          <div class="checkbox-group" id="country-filters">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-award"></i> Degree Type</h2>
+          <div class="checkbox-group" id="degree-filters">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-location-dot"></i> City / Location</h2>
+          <div class="location-search-container">
+            <input type="text" id="location-search-input" placeholder="Search & filter by city..." autocomplete="off">
+            <i class="fa-solid fa-circle-xmark clear-search-icon" id="btn-clear-location-search" style="display: none;"></i>
+          </div>
+          <div class="checkbox-group scrollable-group" id="location-filters">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-briefcase"></i> Study Mode</h2>
+          <div class="checkbox-group" id="study-mode-filters">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button id="btn-reset-filters" class="btn btn-secondary w-full">
+            <i class="fa-solid fa-rotate-left"></i> Reset All Filters
+          </button>
+        </div>
+      </aside>
+
+      <!-- Center Programs Grid/List -->
+      <section class="content-area">
+        <div class="results-header">
+          <div class="results-info">
+            Showing <span id="displayed-count">0</span> of <span id="matching-count">0</span> programs
+          </div>
+          <div class="view-toggles">
+            <button id="btn-view-grid" class="view-btn active" aria-label="Grid view"><i class="fa-solid fa-grip"></i></button>
+            <button id="btn-view-list" class="view-btn" aria-label="List view"><i class="fa-solid fa-list"></i></button>
+          </div>
+        </div>
+
+        <!-- Programs Grid -->
+        <div class="programs-grid" id="programs-container">
+          <!-- Dynamically populated with program cards -->
+          <div class="loading-state">
+            <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
+            <p>Loading programs database...</p>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" id="pagination-controls" style="display: none;">
+          <button id="btn-prev-page" class="btn btn-pagination" disabled><i class="fa-solid fa-chevron-left"></i> Previous</button>
+          <span class="pagination-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+          <button id="btn-next-page" class="btn btn-pagination">Next <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Slide-Out Shortlist Drawer -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <aside class="shortlist-drawer" id="shortlist-drawer">
+      <div class="drawer-header">
+        <h2><i class="fa-solid fa-star text-warning"></i> Selected Programs</h2>
+        <button id="btn-close-drawer" class="btn-close" aria-label="Close shortlist"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="drawer-actions">
+        <button id="btn-export-csv" class="btn btn-success flex-1">
+          <i class="fa-solid fa-file-csv"></i> Export to CSV
+        </button>
+        <button id="btn-copy-clipboard" class="btn btn-primary flex-1">
+          <i class="fa-solid fa-copy"></i> Copy Summary
+        </button>
+        <button id="btn-clear-favorites" class="btn btn-danger" title="Clear all selections">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </div>
+
+      <div class="shortlist-items" id="shortlist-container">
+        <!-- Dynamically populated shortlisted items -->
+        <div class="empty-shortlist">
+          <i class="fa-regular fa-star star-placeholder"></i>
+          <p>Your shortlist is empty</p>
+          <span>Star programs from the main dashboard list to compare and export them here.</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast-notification">Saved to shortlist!</div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 EduBridge Project. Free tool compiled from official DAAD, Study in Greece, and Universitaly databases to support global education equity.</p>
+    </footer>
+
+  </div>
+
+  <!-- Loaded Scraped Programs Data (creates window.PROGRAMS_DATA) -->
+  <script src="programs-data.js"></script>
+  <!-- Main Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
