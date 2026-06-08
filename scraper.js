@@ -6,6 +6,28 @@ const DELAY_MS = 300; // 300ms polite delay between requests
 // Helper function to sleep
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Helper function to fetch with retry and backoff on 429
+async function fetchWithRetry(url, options = {}, retries = 5, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.status === 429) {
+        console.warn(`[Rate Limit] Got 429 for ${url}. Sleeping ${delay}ms and retrying (attempt ${i + 1}/${retries})...`);
+        await sleep(delay);
+        delay *= 2; // Exponential backoff
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      console.warn(`[Error] Fetch failed for ${url}: ${e.message}. Retrying in ${delay}ms...`);
+      await sleep(delay);
+      delay *= 2;
+    }
+  }
+  return fetch(url, options); // Final fallback attempt
+}
+
 // Helper function to clean HTML tags from text
 function cleanText(text) {
   if (typeof text !== 'string') return '';
@@ -1623,7 +1645,7 @@ async function scrapeStudyEU(countryCode, countryName) {
 
   try {
     console.log(`[${countryName}] Fetching search page to initialize session...`);
-    const getRes = await fetch('https://www.study.eu/search', {
+    const getRes = await fetchWithRetry('https://www.study.eu/search', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
@@ -1660,7 +1682,7 @@ async function scrapeStudyEU(countryCode, countryName) {
       bodyParams.append('tuition_region', 'eea');
       bodyParams.append('tuition_max', '25000');
 
-      const postRes = await fetch('https://www.study.eu/search', {
+      const postRes = await fetchWithRetry('https://www.study.eu/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -1682,9 +1704,9 @@ async function scrapeStudyEU(countryCode, countryName) {
       if (!postText) break;
 
       if (page === 1) {
-        const countMatch = postText.match(/<strong>\s*(\d+)\s*programmes found/i);
+        const countMatch = postText.match(/<strong>\s*([\d,]+)\s*programmes found/i);
         if (countMatch) {
-          totalCount = parseInt(countMatch[1]);
+          totalCount = parseInt(countMatch[1].replace(/,/g, ''));
           console.log(`[${countryName}] Total programmes: ${totalCount}`);
         }
       }
@@ -1803,7 +1825,7 @@ async function scrapeStudyEU(countryCode, countryName) {
       const resolvePromises = pageItems.map(async item => {
         const redirectUrl = `https://www.study.eu/link/programme/${item.slug}/from-listings`;
         try {
-          const res = await fetch(redirectUrl, {
+          const res = await fetchWithRetry(redirectUrl, {
             method: 'GET',
             headers: {
               'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -1908,6 +1930,70 @@ async function scrapeAll() {
 
     const portugal = await scrapeStudyEU('pt', 'Portugal');
     allPrograms = allPrograms.concat(portugal);
+    await sleep(DELAY_MS);
+
+    const belgium = await scrapeStudyEU('be', 'Belgium');
+    allPrograms = allPrograms.concat(belgium);
+    await sleep(DELAY_MS);
+
+    const switzerland = await scrapeStudyEU('ch', 'Switzerland');
+    allPrograms = allPrograms.concat(switzerland);
+    await sleep(DELAY_MS);
+
+    const norway = await scrapeStudyEU('no', 'Norway');
+    allPrograms = allPrograms.concat(norway);
+    await sleep(DELAY_MS);
+
+    const netherlands = await scrapeStudyEU('nl', 'Netherlands');
+    allPrograms = allPrograms.concat(netherlands);
+    await sleep(DELAY_MS);
+
+    const ireland = await scrapeStudyEU('ie', 'Ireland');
+    allPrograms = allPrograms.concat(ireland);
+    await sleep(DELAY_MS);
+
+    const lithuania = await scrapeStudyEU('lt', 'Lithuania');
+    allPrograms = allPrograms.concat(lithuania);
+    await sleep(DELAY_MS);
+
+    const slovakia = await scrapeStudyEU('sk', 'Slovakia');
+    allPrograms = allPrograms.concat(slovakia);
+    await sleep(DELAY_MS);
+
+    const latvia = await scrapeStudyEU('lv', 'Latvia');
+    allPrograms = allPrograms.concat(latvia);
+    await sleep(DELAY_MS);
+
+    const cyprus = await scrapeStudyEU('cy', 'Cyprus');
+    allPrograms = allPrograms.concat(cyprus);
+    await sleep(DELAY_MS);
+
+    const romania = await scrapeStudyEU('ro', 'Romania');
+    allPrograms = allPrograms.concat(romania);
+    await sleep(DELAY_MS);
+
+    const slovenia = await scrapeStudyEU('si', 'Slovenia');
+    allPrograms = allPrograms.concat(slovenia);
+    await sleep(DELAY_MS);
+
+    const bulgaria = await scrapeStudyEU('bg', 'Bulgaria');
+    allPrograms = allPrograms.concat(bulgaria);
+    await sleep(DELAY_MS);
+
+    const iceland = await scrapeStudyEU('is', 'Iceland');
+    allPrograms = allPrograms.concat(iceland);
+    await sleep(DELAY_MS);
+
+    const luxembourg = await scrapeStudyEU('lu', 'Luxembourg');
+    allPrograms = allPrograms.concat(luxembourg);
+    await sleep(DELAY_MS);
+
+    const croatia = await scrapeStudyEU('hr', 'Croatia');
+    allPrograms = allPrograms.concat(croatia);
+    await sleep(DELAY_MS);
+
+    const malta = await scrapeStudyEU('mt', 'Malta');
+    allPrograms = allPrograms.concat(malta);
 
     console.log(`\nAggregated all databases successfully. Total programs: ${allPrograms.length}`);
 
