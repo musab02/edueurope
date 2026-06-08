@@ -1616,6 +1616,238 @@ async function scrapeHungary() {
   return itemsCollected;
 }
 
+// 13. Scrape Spain & Portugal (Study.eu)
+async function scrapeStudyEU(countryCode, countryName) {
+  console.log(`--- Scraping ${countryName} (Study.eu) ---`);
+  let itemsCollected = [];
+
+  try {
+    console.log(`[${countryName}] Fetching search page to initialize session...`);
+    const getRes = await fetch('https://www.study.eu/search', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    
+    const setCookie = getRes.headers.get('set-cookie');
+    let cookies = '';
+    if (setCookie) {
+      cookies = setCookie.split(',').map(c => c.split(';')[0]).join('; ');
+    }
+    const html = await getRes.text();
+    const csrfMatch = html.match(/<meta name="csrf-token" content="([^"]+)"/);
+    const csrfToken = csrfMatch ? csrfMatch[1] : null;
+
+    if (!csrfToken) {
+      throw new Error(`[${countryName}] CSRF token not found`);
+    }
+
+    let page = 1;
+    let totalCount = 0;
+    
+    while (true) {
+      console.log(`[${countryName}] Fetching page ${page}...`);
+      const bodyParams = new URLSearchParams();
+      bodyParams.append('authenticity_token', csrfToken);
+      bodyParams.append('page', page.toString());
+      bodyParams.append('search', '');
+      bodyParams.append('countries', countryCode);
+      bodyParams.append('sort', 'recommended');
+      bodyParams.append('degreelevel', '');
+      bodyParams.append('delivery', '');
+      bodyParams.append('currency', 'EUR');
+      bodyParams.append('tuition_term', 'annual');
+      bodyParams.append('tuition_region', 'eea');
+      bodyParams.append('tuition_max', '25000');
+
+      const postRes = await fetch('https://www.study.eu/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Cookie': cookies,
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'X-CSRF-Token': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01'
+        },
+        body: bodyParams.toString()
+      });
+
+      if (!postRes.ok) {
+        console.error(`[${countryName}] Failed to fetch page ${page}: status ${postRes.status}`);
+        break;
+      }
+
+      const postText = await postRes.text();
+      if (!postText) break;
+
+      if (page === 1) {
+        const countMatch = postText.match(/<strong>\s*(\d+)\s*programmes found/i);
+        if (countMatch) {
+          totalCount = parseInt(countMatch[1]);
+          console.log(`[${countryName}] Total programmes: ${totalCount}`);
+        }
+      }
+
+      const resultsStartIdx = postText.indexOf('programmes found');
+      if (resultsStartIdx === -1) {
+        console.log(`[${countryName}] No results start found on page ${page}, stopping.`);
+        break;
+      }
+      const resultsPart = postText.substring(resultsStartIdx);
+      const segments = resultsPart.split(/<li\s+[^>]*data-event-category="Search Result"/gi);
+      const pageItemsCount = segments.length - 1;
+      
+      if (pageItemsCount === 0) {
+        console.log(`[${countryName}] No items found on page ${page}, stopping.`);
+        break;
+      }
+
+      const pageItems = [];
+
+      for (let i = 1; i < segments.length; i++) {
+        const seg = segments[i];
+        
+        // Extract title
+        const titleMatch = seg.match(/<strong>([\s\S]+?)<\/strong>/i);
+        const title = titleMatch ? cleanText(titleMatch[1]) : '';
+        
+        // Extract university
+        const uniMatch = seg.match(/<div class="col-md-12">\s*([\s\S]+?)\s*<br/i);
+        const university = uniMatch ? cleanText(uniMatch[1]) : 'Unknown University';
+        
+        // Extract location
+        const locMatch = seg.match(/class="fa-solid fa-location-dot"[^>]*><\/i>&nbsp;([\s\S]+?)\s*(?:<span|\n|<\/div>)/i);
+        let location = countryName;
+        if (locMatch) {
+          const locText = cleanText(locMatch[1]);
+          const parts = locText.split(',');
+          location = parts[0].trim();
+        }
+
+        // Extract degree
+        const degMatch = seg.match(/class="search-degree-type"[^>]*>\s*([\s\S]+?)\s*<\/div>/i);
+        const degree = degMatch ? cleanText(degMatch[1]) : 'Other';
+        let stdDegree = 'Other';
+        const degLower = degree.toLowerCase();
+        if (degLower.includes('bachelor') || degLower === 'ba' || degLower === 'bsc') {
+          stdDegree = 'Bachelor';
+        } else if (degLower.includes('master') || degLower === 'ma' || degLower === 'msc' || degLower === 'mba') {
+          stdDegree = 'Master';
+        } else if (degLower.includes('phd') || degLower.includes('doctoral') || degLower === 'ph.d.') {
+          stdDegree = 'PhD';
+        } else {
+          stdDegree = degree;
+        }
+
+        const infoRegex = /class="[^"]*search-result-additional-info[^"]*">\s*([\s\S]+?)\s*<\/div>/gi;
+        let match;
+        const infoTexts = [];
+        while ((match = infoRegex.exec(seg)) !== null) {
+          infoTexts.push(cleanText(match[1]));
+        }
+
+        let duration = 'Unknown';
+        let studyMode = 'In Person';
+        let tuitionFee = 'Varies';
+
+        infoTexts.forEach(text => {
+          const lower = text.toLowerCase();
+          if (lower.includes('eur') || lower.includes('usd') || lower.includes('gbp') || lower.includes('€') || lower.includes('$') || lower.includes('£') || lower.includes('tuition') || lower.includes('free') || lower.includes('fees')) {
+            tuitionFee = text;
+          } else if (lower.includes('year') || lower.includes('semester') || lower.includes('month') || lower.includes('ects') || lower.includes('credit')) {
+            if (lower.includes('full-time')) {
+              studyMode = 'In Person (Full-Time)';
+              duration = text.replace(/full-time/i, '').replace(/,\s*$/, '').trim();
+            } else if (lower.includes('part-time')) {
+              studyMode = 'In Person (Part-Time)';
+              duration = text.replace(/part-time/i, '').replace(/,\s*$/, '').trim();
+            } else {
+              duration = text;
+            }
+          }
+        });
+
+        if (duration === tuitionFee) {
+          duration = 'Unknown';
+        }
+
+        // Extract logo
+        const logoMatch = seg.match(/class="search-result-logo"[^>]*src="([^"]+)"/i);
+        const logo = logoMatch ? logoMatch[1] : '';
+
+        // Extract link slug
+        const hrefMatch = seg.match(/<a\s+[^>]*href="([^"]+)"/i);
+        const relativeLink = hrefMatch ? hrefMatch[1] : '';
+        const slug = relativeLink.split('/').pop();
+
+        pageItems.push({
+          id: `${countryCode}_${slug.replace(/[^a-zA-Z0-9]/g, '_')}`,
+          title,
+          university,
+          degree: stdDegree,
+          location,
+          duration,
+          studyMode,
+          deadlines: [],
+          logo,
+          country: countryName,
+          tuitionFee,
+          semesterStart: 'Autumn (September/October) / Spring (February)',
+          slug
+        });
+      }
+
+      // Resolve redirects in parallel for the page items
+      console.log(`[${countryName}] Resolving ${pageItems.length} links in parallel...`);
+      const resolvePromises = pageItems.map(async item => {
+        const redirectUrl = `https://www.study.eu/link/programme/${item.slug}/from-listings`;
+        try {
+          const res = await fetch(redirectUrl, {
+            method: 'GET',
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            redirect: 'manual'
+          });
+          const loc = res.headers.get('location');
+          if (loc) {
+            const cleanLoc = loc.split('?')[0];
+            if (cleanLoc !== 'https://www.study.eu/' && cleanLoc !== 'https://www.study.eu') {
+              item.link = cleanLoc;
+            }
+          }
+        } catch (e) {
+          // Ignore
+        }
+        if (!item.link) {
+          item.link = `https://www.study.eu/university/${item.slug}`;
+        }
+        delete item.slug;
+        return item;
+      });
+
+      const resolvedItems = await Promise.all(resolvePromises);
+      itemsCollected = itemsCollected.concat(resolvedItems);
+
+      console.log(`[${countryName}] Page ${page} complete. Collected ${itemsCollected.length} / ${totalCount}`);
+
+      if (itemsCollected.length >= totalCount || pageItemsCount < 10) {
+        break;
+      }
+
+      page++;
+      await sleep(DELAY_MS);
+    }
+
+  } catch (error) {
+    console.error(`[${countryName}] Error during scraping:`, error);
+  }
+
+  console.log(`[${countryName}] Complete. Total: ${itemsCollected.length}`);
+  return itemsCollected;
+}
+
 // Main aggregate function
 async function scrapeAll() {
   console.log('Starting European English-taught programs crawler...');
@@ -1668,6 +1900,14 @@ async function scrapeAll() {
 
     const hungary = await scrapeHungary();
     allPrograms = allPrograms.concat(hungary);
+    await sleep(DELAY_MS);
+
+    const spain = await scrapeStudyEU('es', 'Spain');
+    allPrograms = allPrograms.concat(spain);
+    await sleep(DELAY_MS);
+
+    const portugal = await scrapeStudyEU('pt', 'Portugal');
+    allPrograms = allPrograms.concat(portugal);
 
     console.log(`\nAggregated all databases successfully. Total programs: ${allPrograms.length}`);
 
