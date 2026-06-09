@@ -1738,13 +1738,24 @@ async function scrapeStudyEU(countryCode, countryName) {
         const uniMatch = seg.match(/<div class="col-md-12">\s*([\s\S]+?)\s*<br/i);
         const university = uniMatch ? cleanText(uniMatch[1]) : 'Unknown University';
         
-        // Extract location
+        // Extract location and country
         const locMatch = seg.match(/class="fa-solid fa-location-dot"[^>]*><\/i>&nbsp;([\s\S]+?)\s*(?:<span|\n|<\/div>)/i);
         let location = countryName;
+        let parsedCountry = countryName;
         if (locMatch) {
           const locText = cleanText(locMatch[1]);
           const parts = locText.split(',');
           location = parts[0].trim();
+          if (parts.length > 1) {
+            parsedCountry = parts[1].trim();
+          }
+        }
+
+        // Skip sponsored/featured programs from other countries
+        const cn = countryName.toLowerCase();
+        const pc = parsedCountry.toLowerCase();
+        if (!pc.includes(cn) && !cn.includes(pc)) {
+          continue;
         }
 
         // Extract degree
@@ -1868,6 +1879,38 @@ async function scrapeStudyEU(countryCode, countryName) {
 
   console.log(`[${countryName}] Complete. Total: ${itemsCollected.length}`);
   return itemsCollected;
+}
+
+function standardizeDegree(degree) {
+  if (typeof degree !== 'string') return 'Certificate';
+  const d = degree.toLowerCase().trim();
+  
+  if (d.includes('bachelor') || d.includes('ba ') || d.includes('ba(') || d.includes('bsc') || d.includes('bba') || d.includes('llb') || d.includes('bmus') || d.includes('hons') || d.includes('academy profession')) {
+    return 'Bachelor';
+  } else if (d.includes('master') || d.includes('magister') || d.includes('msc') || d.includes('llm') || d.includes('mba') || d.includes('mres') || d.includes('mst') || d.includes('msci') || d.includes('mph') || d.includes('advm') || d.includes('mfa') || d.includes('mphil') || d.includes('mmus') || d.includes('med') || d.includes('erasmus mundus')) {
+    return 'Master';
+  } else if (d.includes('phd') || d.includes('ph.d') || d.includes('doctoral') || d.includes('doctor') || d.includes('dla') || d.includes('dba')) {
+    return 'PhD';
+  } else {
+    return 'Certificate';
+  }
+}
+
+function standardizeStudyMode(mode) {
+  if (typeof mode !== 'string') return 'In-Person';
+  const m = mode.toLowerCase().trim();
+  
+  const hasOnline = m.includes('online') || m.includes('distance') || m.includes('remotely') || m.includes('e-learning');
+  const hasInPerson = m.includes('in person') || m.includes('campus') || m.includes('presenza') || m.includes('in-person');
+  const hasBlended = m.includes('blended') || m.includes('hybrid') || m.includes('mix') || m.includes('dual');
+
+  if (hasBlended || (hasOnline && hasInPerson)) {
+    return 'Hybrid';
+  } else if (hasOnline) {
+    return 'Online';
+  } else {
+    return 'In-Person';
+  }
 }
 
 // Main aggregate function
@@ -1994,17 +2037,57 @@ async function scrapeAll() {
 
     const malta = await scrapeStudyEU('mt', 'Malta');
     allPrograms = allPrograms.concat(malta);
+    await sleep(DELAY_MS);
+
+    const russia = await scrapeStudyEU('ru', 'Russia');
+    allPrograms = allPrograms.concat(russia);
 
     console.log(`\nAggregated all databases successfully. Total programs: ${allPrograms.length}`);
 
+    console.log('Standardizing degree and studyMode fields for all programs...');
+    for (const prog of allPrograms) {
+      prog.degree = standardizeDegree(prog.degree);
+      prog.studyMode = standardizeStudyMode(prog.studyMode);
+    }
+
+    console.log('Compressing database keys and minifying output...');
+    const KEY_MAP = {
+      id: 'i',
+      title: 't',
+      university: 'u',
+      degree: 'd',
+      location: 'l',
+      duration: 'du',
+      studyMode: 's',
+      deadlines: 'dl',
+      link: 'lk',
+      logo: 'lo',
+      country: 'c',
+      tuitionFee: 'tf',
+      semesterStart: 'ss'
+    };
+    
+    const compressedPrograms = allPrograms.map(prog => {
+      const compressed = {};
+      for (const [key, value] of Object.entries(prog)) {
+        const shortKey = KEY_MAP[key];
+        if (shortKey) {
+          compressed[shortKey] = value;
+        } else {
+          compressed[key] = value;
+        }
+      }
+      return compressed;
+    });
+
     // Write standard JSON file
     const jsonPath = path.join(__dirname, 'programs.json');
-    fs.writeFileSync(jsonPath, JSON.stringify(allPrograms, null, 2), 'utf-8');
+    fs.writeFileSync(jsonPath, JSON.stringify(compressedPrograms), 'utf-8');
     console.log(`Saved JSON to ${jsonPath}`);
 
     // Write self-contained JS file to bypass CORS
     const jsPath = path.join(__dirname, 'programs-data.js');
-    const jsContent = `// Self-contained European English-Taught Programs Database\nconst PROGRAMS_DATA = ${JSON.stringify(allPrograms, null, 2)};\n`;
+    const jsContent = `// Self-contained European English-Taught Programs Database\nconst PROGRAMS_DATA = ${JSON.stringify(compressedPrograms)};\n`;
     fs.writeFileSync(jsPath, jsContent, 'utf-8');
     console.log(`Saved JS data wrapper to ${jsPath}`);
 

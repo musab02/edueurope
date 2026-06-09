@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>European English-Taught Programs Explorer - Free Search & Shortlist</title>
-  <meta name="description" content="Explore 16,100+ free English-taught Bachelor, Master, and PhD programs in Germany, Greece, Italy, Sweden, Finland, France, Denmark, Austria, Czechia, Poland, Estonia, Hungary, Spain, Portugal, Belgium, Switzerland, Norway, and the Netherlands. Filter by country, city, degree, and study mode, and export your curated shortlist to CSV.">
+  <meta name="description" content="Explore 19,700+ English-taught Bachelor, Master, and PhD programs in Germany, Ireland, Greece, Italy, Sweden, Finland, France, Denmark, Austria, Czechia, Poland, Estonia, Hungary, Spain, Portugal, Belgium, Switzerland, Norway, Netherlands, Serbia, Turkey, Liechtenstein, Russia, Lithuania, Romania, Slovenia, Bulgaria, Croatia, and the United Kingdom. Filter by country, city, degree, tuition fee, and study mode, and export your shortlist to CSV.">
   
   <!-- Google Fonts: Inter and Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,9 +94,46 @@
         </div>
 
         <div class="sidebar-section">
+          <h2><i class="fa-solid fa-school"></i> University</h2>
+          <div class="autocomplete-container" id="university-autocomplete-container">
+            <div class="search-box">
+              <input type="text" id="university-search-input" placeholder="Search & select university..." autocomplete="off">
+              <i class="fa-solid fa-circle-xmark clear-search-icon" id="btn-clear-university-search" style="display: none;"></i>
+            </div>
+            <div class="autocomplete-suggestions" id="university-suggestions" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
           <h2><i class="fa-solid fa-award"></i> Degree Type</h2>
           <div class="checkbox-group" id="degree-filters">
             <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><i class="fa-solid fa-euro-sign"></i> Tuition Fee</h2>
+          <div class="checkbox-group" id="fee-filters">
+            <label class="checkbox-label" data-type="fee">
+              <input type="checkbox" value="free-low">
+              <span>Free / Low (&lt; €1k/yr)</span>
+            </label>
+            <label class="checkbox-label" data-type="fee">
+              <input type="checkbox" value="moderate">
+              <span>Moderate (€1k - €5k/yr)</span>
+            </label>
+            <label class="checkbox-label" data-type="fee">
+              <input type="checkbox" value="medium">
+              <span>Medium (€5k - €15k/yr)</span>
+            </label>
+            <label class="checkbox-label" data-type="fee">
+              <input type="checkbox" value="high">
+              <span>High (&gt; €15k/yr)</span>
+            </label>
+            <label class="checkbox-label" data-type="fee">
+              <input type="checkbox" value="varies">
+              <span>Varies / Unknown</span>
+            </label>
           </div>
         </div>
 
@@ -190,14 +227,14 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>&copy; 2026 EduBridge Project. Free tool compiled from official European national databases (Germany, Greece, Italy, Sweden, Finland, France, Denmark, Austria, Czechia, Poland, Estonia, Hungary, Spain, Portugal, Belgium, Switzerland, Norway, Netherlands) to support global education equity.</p>
+      <p>&copy; 2026 EduBridge Project. Free tool compiled from official European national databases (Germany, Ireland, Greece, Italy, Sweden, Finland, France, Denmark, Austria, Czechia, Poland, Estonia, Hungary, Spain, Portugal, Belgium, Switzerland, Norway, Netherlands, Serbia, Turkey, Liechtenstein, Russia, Lithuania, Romania, Slovenia, Bulgaria, Croatia, United Kingdom) to support global education equity.</p>
     </footer>
 
   </div>
 
   <!-- Loaded Scraped Programs Data (creates window.PROGRAMS_DATA) -->
-  <script src="programs-data.js"></script>
+  <script src="programs-data.js?v=1.4"></script>
   <!-- Main Application Logic -->
-  <script src="app.js"></script>
+  <script src="app.js?v=1.4"></script>
 </body>
 </html>

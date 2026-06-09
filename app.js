@@ -21,6 +21,10 @@ const elLocationFilters = document.getElementById('location-filters');
 const elLocationSearchInput = document.getElementById('location-search-input');
 const elBtnClearLocationSearch = document.getElementById('btn-clear-location-search');
 const elStudyModeFilters = document.getElementById('study-mode-filters');
+const elFeeFilters = document.getElementById('fee-filters');
+const elUniversitySearchInput = document.getElementById('university-search-input');
+const elBtnClearUniversitySearch = document.getElementById('btn-clear-university-search');
+const elUniversitySuggestions = document.getElementById('university-suggestions');
 const elBtnResetFilters = document.getElementById('btn-reset-filters');
 const elDisplayedCount = document.getElementById('displayed-count');
 const elMatchingCount = document.getElementById('matching-count');
@@ -50,11 +54,153 @@ const elStatTotalUniversities = document.getElementById('stat-total-universities
 const elStatTotalLocations = document.getElementById('stat-total-locations');
 const elStatTotalCountries = document.getElementById('stat-total-countries');
 
+// Decompress database keys if needed and parse fees
+function inflatePrograms(data) {
+  if (!Array.isArray(data)) return [];
+  if (data.length > 0 && typeof data[0].i !== 'undefined') {
+    return data.map(p => {
+      const inflated = {
+        id: p.i,
+        title: p.t,
+        university: p.u,
+        degree: p.d,
+        location: p.l,
+        duration: p.du,
+        studyMode: p.s,
+        deadlines: p.dl || [],
+        link: p.lk || '',
+        logo: p.lo || '',
+        country: p.c || '',
+        tuitionFee: p.tf || '',
+        semesterStart: p.ss || ''
+      };
+      const feeRange = parseFeeToEurRange(inflated.tuitionFee, inflated.country);
+      inflated.feeCategory = getFeeCategory(feeRange);
+      return inflated;
+    });
+  }
+  return data.map(p => {
+    if (!p.feeCategory) {
+      const feeRange = parseFeeToEurRange(p.tuitionFee || '', p.country || '');
+      p.feeCategory = getFeeCategory(feeRange);
+    }
+    return p;
+  });
+}
+
+// Currency conversion rates to EUR for Tuition Fee filtering
+const RATES = {
+  EUR: 1.0,
+  GBP: 1.18,
+  USD: 0.93,
+  SEK: 0.087,
+  DKK: 0.134,
+  CZK: 0.040,
+  PLN: 0.23,
+  HUF: 0.0026
+};
+
+// Parse raw tuition fee text to a EUR/year range
+function parseFeeToEurRange(feeStr, country) {
+  if (!feeStr) return { min: 0, max: 0, isFree: true, isVaries: false };
+  
+  const str = feeStr.toLowerCase().trim();
+  
+  if (str === 'free' || str === 'no fee' || str === 'free (public university)') {
+    return { min: 0, max: 0, isFree: true, isVaries: false };
+  }
+  
+  if (str === 'varies' || str === 'no information' || str === 'please enquire') {
+    return { min: 0, max: 0, isFree: false, isVaries: true };
+  }
+
+  if (str.includes('low semester fee') || str.includes('low tuition fee') || (str.includes('public university') && str.includes('free'))) {
+    if (!str.includes('non-eu') || str.includes('typically 100') || str.includes('~100-400')) {
+      return { min: 0, max: 400, isFree: true, isVaries: false };
+    }
+  }
+
+  let targetStr = str;
+  const numRegex = /(?:[€£$]|sek|dkk|czk|pln|huf|eur|gbp|usd)?\s*(\d+(?:[,\s\.]\d{3})*(?:\.\d+)?)\s*(?:eur|gbp|usd|sek|dkk|czk|pln|huf|€|£|\$|per year|per semester|\/year|\/semester)?/gi;
+  
+  let match;
+  const values = [];
+  while ((match = numRegex.exec(targetStr)) !== null) {
+    let cleanNumStr = match[1].replace(/\s/g, '');
+    const commaCount = (cleanNumStr.match(/,/g) || []).length;
+    const dotCount = (cleanNumStr.match(/\./g) || []).length;
+    
+    if (commaCount === 1 && dotCount === 0) {
+      if (cleanNumStr.split(',')[1].length === 3) {
+        cleanNumStr = cleanNumStr.replace(',', '');
+      } else {
+        cleanNumStr = cleanNumStr.replace(',', '.');
+      }
+    } else if (dotCount === 1 && commaCount === 0) {
+      if (cleanNumStr.split('.')[1].length === 3) {
+        cleanNumStr = cleanNumStr.replace('.', '');
+      }
+    } else if (commaCount > 0 || dotCount > 0) {
+      cleanNumStr = cleanNumStr.replace(/,/g, '');
+    }
+    
+    const num = parseFloat(cleanNumStr);
+    if (!isNaN(num) && num > 10) {
+      let currency = 'EUR';
+      if (targetStr.includes('sek') || (targetStr.includes('kr') && country === 'Sweden')) currency = 'SEK';
+      else if (targetStr.includes('dkk') || (targetStr.includes('kr') && country === 'Denmark')) currency = 'DKK';
+      else if (targetStr.includes('czk') || targetStr.includes('kc')) currency = 'CZK';
+      else if (targetStr.includes('pln') || targetStr.includes('zł')) currency = 'PLN';
+      else if (targetStr.includes('gbp') || targetStr.includes('£')) currency = 'GBP';
+      else if (targetStr.includes('usd') || targetStr.includes('$')) currency = 'USD';
+      else if (targetStr.includes('huf') || targetStr.includes('ft')) currency = 'HUF';
+
+      let eurValue = num * (RATES[currency] || 1.0);
+      
+      if (match[0].toLowerCase().includes('semester') || targetStr.includes('semester')) {
+        if (!targetStr.includes('total') && !targetStr.includes('per year')) {
+          eurValue *= 2;
+        }
+      }
+      
+      values.push(eurValue);
+    }
+  }
+
+  if (values.length === 0) {
+    if (str.includes('free') || str.includes('low')) {
+      return { min: 0, max: 500, isFree: true, isVaries: false };
+    }
+    return { min: 0, max: 0, isFree: false, isVaries: true };
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  return { min, max, isFree: false, isVaries: false };
+}
+
+// Convert EUR/year range to classification category tag
+function getFeeCategory(range) {
+  if (range.isFree && range.max <= 1000) return 'free-low';
+  if (range.isVaries) return 'varies';
+  
+  if (range.max <= 1000) return 'free-low';
+  if (range.min >= 15000) return 'high';
+  if (range.min >= 5000) return 'medium';
+  if (range.max <= 5000) return 'moderate';
+  
+  const mid = (range.min + range.max) / 2;
+  if (mid <= 5000) return 'moderate';
+  if (mid <= 15000) return 'medium';
+  return 'high';
+}
+
+
 // Initialize the Application
 document.addEventListener('DOMContentLoaded', () => {
   // Load data from global variable or fallback to fetch
   if (typeof PROGRAMS_DATA !== 'undefined' && Array.isArray(PROGRAMS_DATA)) {
-    initApp(PROGRAMS_DATA);
+    initApp(inflatePrograms(PROGRAMS_DATA));
   } else {
     // If not defined (e.g. scraper is still running or JS failed to load), try fetching JSON
     fetch('programs.json')
@@ -62,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error('Data file not ready.');
         return response.json();
       })
-      .then(data => initApp(data))
+      .then(data => initApp(inflatePrograms(data)))
       .catch(err => {
         console.error(err);
         elProgramsContainer.innerHTML = `
@@ -207,6 +353,64 @@ function setupEventListeners() {
     labels.forEach(label => label.style.display = 'flex');
   });
 
+  // University Autocomplete Search
+  let uniNames = [];
+
+  elUniversitySearchInput.addEventListener('input', () => {
+    if (uniNames.length === 0 && programs.length > 0) {
+      uniNames = [...new Set(programs.map(p => p.university))].sort();
+    }
+    
+    const query = elUniversitySearchInput.value.trim().toLowerCase();
+    elBtnClearUniversitySearch.style.display = query ? 'block' : 'none';
+    
+    if (!query) {
+      elUniversitySuggestions.style.display = 'none';
+      elUniversitySuggestions.innerHTML = '';
+      currentPage = 1;
+      applyFiltersAndSort();
+      return;
+    }
+
+    const matches = uniNames.filter(u => u.toLowerCase().includes(query)).slice(0, 10);
+    
+    if (matches.length > 0) {
+      elUniversitySuggestions.innerHTML = matches.map(u => `
+        <div class="suggestion-item" data-value="${u}">${u}</div>
+      `).join('');
+    } else {
+      elUniversitySuggestions.innerHTML = `<div class="suggestion-item-no-results">No universities found</div>`;
+    }
+    elUniversitySuggestions.style.display = 'block';
+  });
+
+  elUniversitySuggestions.addEventListener('click', (e) => {
+    const item = e.target.closest('.suggestion-item');
+    if (item) {
+      const val = item.getAttribute('data-value');
+      elUniversitySearchInput.value = val;
+      elUniversitySuggestions.style.display = 'none';
+      elBtnClearUniversitySearch.style.display = 'block';
+      currentPage = 1;
+      applyFiltersAndSort();
+    }
+  });
+
+  elBtnClearUniversitySearch.addEventListener('click', () => {
+    elUniversitySearchInput.value = '';
+    elUniversitySuggestions.style.display = 'none';
+    elBtnClearUniversitySearch.style.display = 'none';
+    currentPage = 1;
+    applyFiltersAndSort();
+  });
+
+  // Hide suggestions when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#university-autocomplete-container')) {
+      elUniversitySuggestions.style.display = 'none';
+    }
+  });
+
   // Sorting
   elSelectSort.addEventListener('change', () => {
     currentPage = 1;
@@ -214,7 +418,7 @@ function setupEventListeners() {
   });
 
   // Filter Checkbox changes
-  [elCountryFilters, elDegreeFilters, elLocationFilters, elStudyModeFilters].forEach(container => {
+  [elCountryFilters, elDegreeFilters, elLocationFilters, elStudyModeFilters, elFeeFilters].forEach(container => {
     container.addEventListener('change', () => {
       currentPage = 1;
       applyFiltersAndSort();
@@ -228,6 +432,10 @@ function setupEventListeners() {
     
     elLocationSearchInput.value = '';
     elBtnClearLocationSearch.style.display = 'none';
+    
+    elUniversitySearchInput.value = '';
+    elBtnClearUniversitySearch.style.display = 'none';
+    elUniversitySuggestions.style.display = 'none';
     
     // Reset city label displays
     const locationLabels = elLocationFilters.querySelectorAll('.checkbox-label');
@@ -310,12 +518,14 @@ function setupEventListeners() {
 // 4. Filtering, Sorting, and Core Calculation
 function applyFiltersAndSort() {
   const searchQuery = elSearchInput.value.trim().toLowerCase();
+  const universityQuery = elUniversitySearchInput.value.trim().toLowerCase();
 
   // Get active filters
   const selectedCountries = Array.from(elCountryFilters.querySelectorAll('input:checked')).map(cb => cb.value);
   const selectedDegrees = Array.from(elDegreeFilters.querySelectorAll('input:checked')).map(cb => cb.value);
   const selectedLocations = Array.from(elLocationFilters.querySelectorAll('input:checked')).map(cb => cb.value);
   const selectedStudyModes = Array.from(elStudyModeFilters.querySelectorAll('input:checked')).map(cb => cb.value);
+  const selectedFees = Array.from(elFeeFilters.querySelectorAll('input:checked')).map(cb => cb.value);
 
   // Apply filters
   filteredPrograms = programs.filter(prog => {
@@ -338,7 +548,13 @@ function applyFiltersAndSort() {
     // Study Mode match (OR within group)
     const studyModeMatch = selectedStudyModes.length === 0 || selectedStudyModes.includes(prog.studyMode);
 
-    return searchMatch && countryMatch && degreeMatch && locationMatch && studyModeMatch;
+    // University Autocomplete match
+    const universityMatch = !universityQuery || prog.university.toLowerCase().includes(universityQuery);
+
+    // Tuition Fee match (OR within group)
+    const feeMatch = selectedFees.length === 0 || selectedFees.includes(prog.feeCategory);
+
+    return searchMatch && countryMatch && degreeMatch && locationMatch && studyModeMatch && universityMatch && feeMatch;
   });
 
   // Apply Sorting
@@ -444,7 +660,7 @@ function renderPrograms() {
         <span class="meta-pill pill-location"><i class="fa-solid fa-location-dot"></i> ${prog.location}</span>
         <span class="meta-pill"><i class="fa-regular fa-calendar-days"></i> ${prog.duration}</span>
         <span class="meta-pill" title="${prog.studyMode}"><i class="fa-solid fa-book-open"></i> ${prog.studyMode.length > 20 ? prog.studyMode.slice(0, 18) + '...' : prog.studyMode}</span>
-        <span class="meta-pill pill-fee" title="Tuition Fee"><i class="fa-solid fa-tags"></i> ${prog.tuitionFee || 'Free / Low Tuition'}</span>
+        <span class="meta-pill pill-fee fee-${prog.feeCategory || 'varies'}" title="Tuition Fee"><i class="fa-solid fa-tags"></i> ${prog.tuitionFee || 'Free / Low Tuition'}</span>
         <span class="meta-pill pill-start" title="Semester Start"><i class="fa-regular fa-calendar-check"></i> ${prog.semesterStart || 'Autumn / Spring'}</span>
       </div>
 
