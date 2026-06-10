@@ -10,6 +10,12 @@ let currentPage = 1;
 const itemsPerPage = 24;
 let viewMode = 'grid'; // 'grid' or 'list'
 
+// Chart instances
+let chartFee = null;
+let chartDegree = null;
+let chartCountry = null;
+let chartStudyMode = null;
+
 // DOM Elements
 const elProgramsContainer = document.getElementById('programs-container');
 const elSearchInput = document.getElementById('search-input');
@@ -36,6 +42,14 @@ const elTotalPages = document.getElementById('total-pages');
 const elBtnPrevPage = document.getElementById('btn-prev-page');
 const elBtnNextPage = document.getElementById('btn-next-page');
 
+// Phase 6 Filters & Panel Tabs Elements
+const elDurationFilters = document.getElementById('duration-filters');
+const elStartFilters = document.getElementById('start-filters');
+const elTabBtnExplore = document.getElementById('tab-btn-explore');
+const elTabBtnAnalytics = document.getElementById('tab-btn-analytics');
+const elExplorePanel = document.getElementById('explore-panel');
+const elAnalyticsPanel = document.getElementById('analytics-panel');
+
 // Drawer DOM Elements
 const elDrawerOverlay = document.getElementById('drawer-overlay');
 const elShortlistDrawer = document.getElementById('shortlist-drawer');
@@ -43,16 +57,94 @@ const elBtnBookmarkDrawerToggle = document.getElementById('btn-bookmark-drawer-t
 const elBtnCloseDrawer = document.getElementById('btn-close-drawer');
 const elShortlistContainer = document.getElementById('shortlist-container');
 const elShortlistCount = document.getElementById('shortlist-count');
+const elBtnComparePrograms = document.getElementById('btn-compare-programs');
 const elBtnExportCSV = document.getElementById('btn-export-csv');
 const elBtnCopyClipboard = document.getElementById('btn-copy-clipboard');
 const elBtnClearFavorites = document.getElementById('btn-clear-favorites');
 const elToastNotification = document.getElementById('toast-notification');
+
+// Comparison Modal Elements
+const elComparisonModal = document.getElementById('comparison-modal');
+const elComparisonModalOverlay = document.getElementById('comparison-modal-overlay');
+const elBtnCloseComparisonModal = document.getElementById('btn-close-comparison-modal');
+const elComparisonTableWrapper = document.getElementById('comparison-table-wrapper');
 
 // Stats DOM Elements
 const elStatTotalPrograms = document.getElementById('stat-total-programs');
 const elStatTotalUniversities = document.getElementById('stat-total-universities');
 const elStatTotalLocations = document.getElementById('stat-total-locations');
 const elStatTotalCountries = document.getElementById('stat-total-countries');
+
+// Convert raw duration text to standard category
+function getDurationCategory(durationStr) {
+  if (!durationStr || durationStr.toLowerCase() === 'unknown' || durationStr.toLowerCase().includes('varies')) {
+    return 'varies';
+  }
+  const str = durationStr.toLowerCase().trim();
+  
+  // Try to match standard time units
+  const match = str.match(/(\d+(?:\.\d+)?)\s*(semester|month|year|trimester|wk|week)/i);
+  if (!match) {
+    const numMatch = str.match(/(\d+(?:\.\d+)?)/);
+    if (!numMatch) return 'varies';
+    const num = parseFloat(numMatch[1]);
+    if (str.includes('year') || str.includes('yr')) {
+      return num <= 1.0 ? 'short' : (num <= 1.5 ? 'medium' : (num <= 2.0 ? 'long' : 'very-long'));
+    }
+    if (str.includes('semester') || str.includes('sem')) {
+      return num <= 2 ? 'short' : (num <= 3 ? 'medium' : (num <= 4 ? 'long' : 'very-long'));
+    }
+    if (str.includes('month') || str.includes('mo')) {
+      return num <= 12 ? 'short' : (num <= 18 ? 'medium' : (num <= 24 ? 'long' : 'very-long'));
+    }
+    return 'varies';
+  }
+  
+  const num = parseFloat(match[1]);
+  const unit = match[2];
+  
+  let months = 0;
+  if (unit.startsWith('month')) {
+    months = num;
+  } else if (unit.startsWith('semester')) {
+    months = num * 6;
+  } else if (unit.startsWith('year')) {
+    months = num * 12;
+  } else if (unit.startsWith('trimester')) {
+    months = num * 4;
+  } else if (unit.startsWith('week') || unit.startsWith('wk')) {
+    months = num / 4.33;
+  } else {
+    months = num;
+  }
+  
+  if (months <= 12) return 'short';
+  if (months <= 18) return 'medium';
+  if (months <= 24) return 'long';
+  return 'very-long';
+}
+
+// Convert raw semester start text to an array of standard categories (winter, summer, rolling)
+function getSemesterStartCategory(startStr) {
+  if (!startStr) return ['rolling'];
+  const str = startStr.toLowerCase();
+  
+  const hasWinter = str.includes('winter') || str.includes('october') || str.includes('november') || str.includes('september') || str.includes('autumn') || str.includes('fall') || str.includes('sept') || str.includes('oct') || str.includes('nov');
+  const hasSummer = str.includes('summer') || str.includes('april') || str.includes('march') || str.includes('may') || str.includes('spring') || str.includes('apr') || str.includes('mar');
+  
+  if (str.includes('rolling') || str.includes('anytime') || str.includes('enquire') || str.includes('flexible')) {
+    return ['rolling'];
+  }
+  
+  const categories = [];
+  if (hasWinter) categories.push('winter');
+  if (hasSummer) categories.push('summer');
+  
+  if (categories.length === 0) {
+    categories.push('rolling');
+  }
+  return categories;
+}
 
 // Decompress database keys if needed and parse fees
 function inflatePrograms(data) {
@@ -76,6 +168,8 @@ function inflatePrograms(data) {
       };
       const feeRange = parseFeeToEurRange(inflated.tuitionFee, inflated.country);
       inflated.feeCategory = getFeeCategory(feeRange);
+      inflated.durationCategory = getDurationCategory(inflated.duration);
+      inflated.startCategories = getSemesterStartCategory(inflated.semesterStart);
       return inflated;
     });
   }
@@ -83,6 +177,12 @@ function inflatePrograms(data) {
     if (!p.feeCategory) {
       const feeRange = parseFeeToEurRange(p.tuitionFee || '', p.country || '');
       p.feeCategory = getFeeCategory(feeRange);
+    }
+    if (!p.durationCategory) {
+      p.durationCategory = getDurationCategory(p.duration);
+    }
+    if (!p.startCategories) {
+      p.startCategories = getSemesterStartCategory(p.semesterStart);
     }
     return p;
   });
@@ -418,7 +518,7 @@ function setupEventListeners() {
   });
 
   // Filter Checkbox changes
-  [elCountryFilters, elDegreeFilters, elLocationFilters, elStudyModeFilters, elFeeFilters].forEach(container => {
+  [elCountryFilters, elDegreeFilters, elLocationFilters, elStudyModeFilters, elFeeFilters, elDurationFilters, elStartFilters].forEach(container => {
     container.addEventListener('change', () => {
       currentPage = 1;
       applyFiltersAndSort();
@@ -485,6 +585,26 @@ function setupEventListeners() {
     }
   });
 
+  // Tab switching event listeners
+  elTabBtnExplore.addEventListener('click', () => {
+    elTabBtnExplore.classList.add('active');
+    elTabBtnAnalytics.classList.remove('active');
+    elExplorePanel.classList.add('active');
+    elAnalyticsPanel.classList.remove('active');
+    elExplorePanel.style.display = 'block';
+    elAnalyticsPanel.style.display = 'none';
+  });
+
+  elTabBtnAnalytics.addEventListener('click', () => {
+    elTabBtnAnalytics.classList.add('active');
+    elTabBtnExplore.classList.remove('active');
+    elAnalyticsPanel.classList.add('active');
+    elExplorePanel.classList.remove('active');
+    elAnalyticsPanel.style.display = 'block';
+    elExplorePanel.style.display = 'none';
+    updateCharts();
+  });
+
   // Shortlist Drawer toggles
   elBtnBookmarkDrawerToggle.addEventListener('click', () => {
     elShortlistDrawer.classList.add('open');
@@ -498,6 +618,33 @@ function setupEventListeners() {
 
   elBtnCloseDrawer.addEventListener('click', closeDrawer);
   elDrawerOverlay.addEventListener('click', closeDrawer);
+
+  // Compare Selected Button
+  elBtnComparePrograms.addEventListener('click', () => {
+    if (favorites.length === 0) {
+      showToast('Add programs to shortlist first');
+      return;
+    }
+    renderComparisonTable();
+    elComparisonModal.style.display = 'flex';
+    elComparisonModalOverlay.style.display = 'block';
+    setTimeout(() => {
+      elComparisonModal.classList.add('open');
+      elComparisonModalOverlay.classList.add('open');
+    }, 10);
+  });
+
+  const closeComparisonModal = () => {
+    elComparisonModal.classList.remove('open');
+    elComparisonModalOverlay.classList.remove('open');
+    setTimeout(() => {
+      elComparisonModal.style.display = 'none';
+      elComparisonModalOverlay.style.display = 'none';
+    }, 300);
+  };
+
+  elBtnCloseComparisonModal.addEventListener('click', closeComparisonModal);
+  elComparisonModalOverlay.addEventListener('click', closeComparisonModal);
 
   // Shortlist Actions
   elBtnClearFavorites.addEventListener('click', () => {
@@ -526,6 +673,8 @@ function applyFiltersAndSort() {
   const selectedLocations = Array.from(elLocationFilters.querySelectorAll('input:checked')).map(cb => cb.value);
   const selectedStudyModes = Array.from(elStudyModeFilters.querySelectorAll('input:checked')).map(cb => cb.value);
   const selectedFees = Array.from(elFeeFilters.querySelectorAll('input:checked')).map(cb => cb.value);
+  const selectedDurations = Array.from(elDurationFilters.querySelectorAll('input:checked')).map(cb => cb.value);
+  const selectedStarts = Array.from(elStartFilters.querySelectorAll('input:checked')).map(cb => cb.value);
 
   // Apply filters
   filteredPrograms = programs.filter(prog => {
@@ -554,7 +703,14 @@ function applyFiltersAndSort() {
     // Tuition Fee match (OR within group)
     const feeMatch = selectedFees.length === 0 || selectedFees.includes(prog.feeCategory);
 
-    return searchMatch && countryMatch && degreeMatch && locationMatch && studyModeMatch && universityMatch && feeMatch;
+    // Duration match (OR within group)
+    const durationMatch = selectedDurations.length === 0 || selectedDurations.includes(prog.durationCategory);
+
+    // Semester Start match (OR within group - match any of the start categories)
+    const startMatch = selectedStarts.length === 0 || 
+      (prog.startCategories && prog.startCategories.some(cat => selectedStarts.includes(cat)));
+
+    return searchMatch && countryMatch && degreeMatch && locationMatch && studyModeMatch && universityMatch && feeMatch && durationMatch && startMatch;
   });
 
   // Apply Sorting
@@ -576,6 +732,11 @@ function applyFiltersAndSort() {
   // Update counts
   elMatchingCount.textContent = filteredPrograms.length;
   
+  // If visual insights panel is currently active, update charts immediately
+  if (elAnalyticsPanel && elAnalyticsPanel.classList.contains('active')) {
+    updateCharts();
+  }
+
   // Render Programs and Pagination
   renderPrograms();
 }
@@ -871,4 +1032,280 @@ function copyToClipboard() {
       console.error('Failed to copy text: ', err);
       showToast('Failed to copy. Try again.');
     });
+}
+
+// 10. Visual Analytics / Insights Chart Redrawing
+function updateAnalyticsMetrics() {
+  const matchingPrograms = filteredPrograms.length;
+  const unis = new Set(filteredPrograms.map(p => p.university));
+  const cities = new Set(filteredPrograms.map(p => p.location));
+  const countries = new Set(filteredPrograms.map(p => p.country).filter(Boolean));
+
+  document.getElementById('metric-programs').textContent = matchingPrograms.toLocaleString();
+  document.getElementById('metric-unis').textContent = unis.size.toLocaleString();
+  document.getElementById('metric-cities').textContent = cities.size.toLocaleString();
+  document.getElementById('metric-countries').textContent = countries.size.toLocaleString();
+}
+
+function updateCharts() {
+  updateAnalyticsMetrics();
+
+  // 1. Tuition Fee Distribution
+  const feeCounts = {
+    'free-low': 0,
+    'moderate': 0,
+    'medium': 0,
+    'high': 0,
+    'varies': 0
+  };
+  
+  // 2. Degree Distribution
+  const degreeCounts = {
+    'Bachelor': 0,
+    'Master': 0,
+    'PhD': 0,
+    'Certificate': 0
+  };
+  
+  // 3. Country Distribution
+  const countryCounts = {};
+  
+  // 4. Study Mode Distribution
+  const studyModeCounts = {
+    'In-Person': 0,
+    'Hybrid': 0,
+    'Online': 0
+  };
+
+  filteredPrograms.forEach(p => {
+    // Fee
+    if (feeCounts[p.feeCategory] !== undefined) {
+      feeCounts[p.feeCategory]++;
+    } else {
+      feeCounts['varies']++;
+    }
+    
+    // Degree
+    if (degreeCounts[p.degree] !== undefined) {
+      degreeCounts[p.degree]++;
+    }
+    
+    // Country
+    if (p.country) {
+      countryCounts[p.country] = (countryCounts[p.country] || 0) + 1;
+    }
+    
+    // Study Mode
+    if (studyModeCounts[p.studyMode] !== undefined) {
+      studyModeCounts[p.studyMode]++;
+    }
+  });
+
+  // Setup common chart options
+  const baseChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: {
+          color: '#94a3b8',
+          font: { family: 'Inter', size: 11 }
+        }
+      },
+      tooltip: {
+        backgroundColor: '#1e293b',
+        titleColor: '#f8fafc',
+        bodyColor: '#94a3b8',
+        borderColor: '#3b82f6',
+        borderWidth: 1
+      }
+    }
+  };
+
+  // --- 1. Fee Chart (Doughnut) ---
+  if (chartFee) chartFee.destroy();
+  const ctxFee = document.getElementById('chart-fee').getContext('2d');
+  chartFee = new Chart(ctxFee, {
+    type: 'doughnut',
+    data: {
+      labels: ['Free / Low (<€1k)', 'Moderate (€1k-€5k)', 'Medium (€5k-€15k)', 'High (>€15k)', 'Varies / Unknown'],
+      datasets: [{
+        data: [
+          feeCounts['free-low'],
+          feeCounts['moderate'],
+          feeCounts['medium'],
+          feeCounts['high'],
+          feeCounts['varies']
+        ],
+        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#64748b'],
+        borderWidth: 1,
+        borderColor: '#151e2e'
+      }]
+    },
+    options: baseChartOptions
+  });
+
+  // --- 2. Degree Chart (Doughnut) ---
+  if (chartDegree) chartDegree.destroy();
+  const ctxDegree = document.getElementById('chart-degree').getContext('2d');
+  chartDegree = new Chart(ctxDegree, {
+    type: 'doughnut',
+    data: {
+      labels: ['Bachelor', 'Master', 'PhD', 'Certificate'],
+      datasets: [{
+        data: [
+          degreeCounts['Bachelor'],
+          degreeCounts['Master'],
+          degreeCounts['PhD'],
+          degreeCounts['Certificate']
+        ],
+        backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4'],
+        borderWidth: 1,
+        borderColor: '#151e2e'
+      }]
+    },
+    options: baseChartOptions
+  });
+
+  // --- 3. Country Chart (Horizontal Bar) ---
+  const sortedCountries = Object.entries(countryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+    
+  if (chartCountry) chartCountry.destroy();
+  const ctxCountry = document.getElementById('chart-country').getContext('2d');
+  chartCountry = new Chart(ctxCountry, {
+    type: 'bar',
+    data: {
+      labels: sortedCountries.map(x => x[0]),
+      datasets: [{
+        label: 'Programs',
+        data: sortedCountries.map(x => x[1]),
+        backgroundColor: 'rgba(59, 130, 246, 0.75)',
+        borderColor: '#3b82f6',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      ...baseChartOptions,
+      indexAxis: 'y',
+      plugins: {
+        ...baseChartOptions.plugins,
+        legend: { display: false }
+      },
+      scales: {
+        x: {
+          grid: { color: '#26354a' },
+          ticks: { color: '#94a3b8', font: { family: 'Inter' } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: '#94a3b8', font: { family: 'Inter' } }
+        }
+      }
+    }
+  });
+
+  // --- 4. Study Mode Chart (Bar) ---
+  if (chartStudyMode) chartStudyMode.destroy();
+  const ctxStudyMode = document.getElementById('chart-study-mode').getContext('2d');
+  chartStudyMode = new Chart(ctxStudyMode, {
+    type: 'bar',
+    data: {
+      labels: ['In-Person', 'Hybrid', 'Online'],
+      datasets: [{
+        label: 'Programs',
+        data: [
+          studyModeCounts['In-Person'],
+          studyModeCounts['Hybrid'],
+          studyModeCounts['Online']
+        ],
+        backgroundColor: ['rgba(59, 130, 246, 0.75)', 'rgba(245, 158, 11, 0.75)', 'rgba(16, 185, 129, 0.75)'],
+        borderColor: ['#3b82f6', '#f59e0b', '#10b981'],
+        borderWidth: 1
+      }]
+    },
+    options: baseChartOptions
+  });
+}
+
+// 11. Shortlist Comparison Table Rendering
+function renderComparisonTable() {
+  if (favorites.length === 0) {
+    elComparisonTableWrapper.innerHTML = `
+      <div class="empty-shortlist">
+        <i class="fa-solid fa-scale-balanced star-placeholder"></i>
+        <p>No programs selected to compare</p>
+        <span>Add programs to your shortlist first.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const comparedPrograms = favorites.map(id => programs.find(p => p.id === id)).filter(Boolean);
+
+  let html = `<table class="comparison-table">`;
+  
+  // Table Head
+  html += `<thead><tr><th class="empty-corner">Property</th>`;
+  comparedPrograms.forEach(p => {
+    html += `
+      <th>
+        <div class="compare-title-cell">
+          <h4 title="${p.title}">${p.title.length > 50 ? p.title.slice(0, 47) + '...' : p.title}</h4>
+          <span>${p.university}</span>
+          <button class="compare-remove-btn" data-remove-id="${p.id}"><i class="fa-solid fa-trash-can"></i> Remove</button>
+        </div>
+      </th>
+    `;
+  });
+  html += `</tr></thead>`;
+
+  // Table Body
+  const properties = [
+    { label: 'Country', key: 'country' },
+    { label: 'Degree Type', key: 'degree' },
+    { label: 'City/Location', key: 'location' },
+    { label: 'Duration', key: 'duration' },
+    { label: 'Tuition Fee', key: 'tuitionFee' },
+    { label: 'Study Mode', key: 'studyMode' },
+    { label: 'Semester Start', key: 'semesterStart' },
+    {
+      label: 'Deadlines',
+      fn: p => p.deadlines && p.deadlines.length > 0 
+        ? `<ul style="list-style:none;padding:0;margin:0;font-size:0.8rem;">${p.deadlines.map(d => `<li><i class="fa-regular fa-clock text-warning"></i> ${d}</li>`).join('')}</ul>` 
+        : 'Check website'
+    },
+    {
+      label: 'Details Link',
+      fn: p => `<a href="${p.link}" target="_blank" class="btn btn-secondary btn-sm" style="padding:0.4rem 0.75rem;font-size:0.8rem;">Apply <i class="fa-solid fa-arrow-up-right-from-square"></i></a>`
+    }
+  ];
+
+  html += `<tbody>`;
+  properties.forEach(prop => {
+    html += `<tr><td class="property-label">${prop.label}</td>`;
+    comparedPrograms.forEach(p => {
+      let val = '';
+      if (prop.fn) {
+        val = prop.fn(p);
+      } else {
+        val = p[prop.key] || 'Varies / Unknown';
+      }
+      html += `<td>${val}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table>`;
+
+  elComparisonTableWrapper.innerHTML = html;
+
+  // Add click handlers for remove buttons
+  elComparisonTableWrapper.querySelectorAll('.compare-remove-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = btn.getAttribute('data-remove-id');
+      toggleFavorite(id);
+      renderComparisonTable();
+    });
+  });
 }

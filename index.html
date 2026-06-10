@@ -15,7 +15,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=1.6">
+  
+  <!-- Chart.js CDN for Visual Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="dark-mode">
 
@@ -138,6 +141,32 @@
         </div>
 
         <div class="sidebar-section">
+          <h2><i class="fa-regular fa-clock"></i> Duration</h2>
+          <div class="checkbox-group" id="duration-filters">
+            <label class="checkbox-label" data-type="duration">
+              <input type="checkbox" value="short">
+              <span>Up to 1 Year</span>
+            </label>
+            <label class="checkbox-label" data-type="duration">
+              <input type="checkbox" value="medium">
+              <span>1.5 Years</span>
+            </label>
+            <label class="checkbox-label" data-type="duration">
+              <input type="checkbox" value="long">
+              <span>2 Years</span>
+            </label>
+            <label class="checkbox-label" data-type="duration">
+              <input type="checkbox" value="very-long">
+              <span>&gt; 2 Years</span>
+            </label>
+            <label class="checkbox-label" data-type="duration">
+              <input type="checkbox" value="varies">
+              <span>Varies / Unknown</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
           <h2><i class="fa-solid fa-location-dot"></i> City / Location</h2>
           <div class="location-search-container">
             <input type="text" id="location-search-input" placeholder="Search & filter by city..." autocomplete="off">
@@ -155,6 +184,24 @@
           </div>
         </div>
 
+        <div class="sidebar-section">
+          <h2><i class="fa-regular fa-calendar-check"></i> Semester Start</h2>
+          <div class="checkbox-group" id="start-filters">
+            <label class="checkbox-label" data-type="start">
+              <input type="checkbox" value="winter">
+              <span>Winter / Autumn Start</span>
+            </label>
+            <label class="checkbox-label" data-type="start">
+              <input type="checkbox" value="summer">
+              <span>Summer / Spring Start</span>
+            </label>
+            <label class="checkbox-label" data-type="start">
+              <input type="checkbox" value="rolling">
+              <span>Rolling / Anytime</span>
+            </label>
+          </div>
+        </div>
+
         <div class="sidebar-footer">
           <button id="btn-reset-filters" class="btn btn-secondary w-full">
             <i class="fa-solid fa-rotate-left"></i> Reset All Filters
@@ -164,30 +211,91 @@
 
       <!-- Center Programs Grid/List -->
       <section class="content-area">
-        <div class="results-header">
-          <div class="results-info">
-            Showing <span id="displayed-count">0</span> of <span id="matching-count">0</span> programs
+        
+        <!-- App Navigation Tabs -->
+        <div class="app-tabs">
+          <button class="tab-btn active" id="tab-btn-explore"><i class="fa-solid fa-compass"></i> Explore Programs</button>
+          <button class="tab-btn" id="tab-btn-analytics"><i class="fa-solid fa-chart-pie"></i> Visual Insights</button>
+        </div>
+
+        <!-- Explore Panel (Default) -->
+        <div class="tab-panel active" id="explore-panel">
+          <div class="results-header">
+            <div class="results-info">
+              Showing <span id="displayed-count">0</span> of <span id="matching-count">0</span> programs
+            </div>
+            <div class="view-toggles">
+              <button id="btn-view-grid" class="view-btn active" aria-label="Grid view"><i class="fa-solid fa-grip"></i></button>
+              <button id="btn-view-list" class="view-btn" aria-label="List view"><i class="fa-solid fa-list"></i></button>
+            </div>
           </div>
-          <div class="view-toggles">
-            <button id="btn-view-grid" class="view-btn active" aria-label="Grid view"><i class="fa-solid fa-grip"></i></button>
-            <button id="btn-view-list" class="view-btn" aria-label="List view"><i class="fa-solid fa-list"></i></button>
+
+          <!-- Programs Grid -->
+          <div class="programs-grid" id="programs-container">
+            <!-- Dynamically populated with program cards -->
+            <div class="loading-state">
+              <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
+              <p>Loading programs database...</p>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination-container" id="pagination-controls" style="display: none;">
+            <button id="btn-prev-page" class="btn btn-pagination" disabled><i class="fa-solid fa-chevron-left"></i> Previous</button>
+            <span class="pagination-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
+            <button id="btn-next-page" class="btn btn-pagination">Next <i class="fa-solid fa-chevron-right"></i></button>
           </div>
         </div>
 
-        <!-- Programs Grid -->
-        <div class="programs-grid" id="programs-container">
-          <!-- Dynamically populated with program cards -->
-          <div class="loading-state">
-            <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
-            <p>Loading programs database...</p>
+        <!-- Analytics Panel (Hidden by default) -->
+        <div class="tab-panel" id="analytics-panel" style="display: none;">
+          <!-- Metrics Cards Grid -->
+          <div class="analytics-metrics">
+            <div class="metric-card">
+              <span class="metric-val" id="metric-programs">0</span>
+              <span class="metric-lbl">Matching Programs</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-unis">0</span>
+              <span class="metric-lbl">Universities</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-cities">0</span>
+              <span class="metric-lbl">Cities</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val" id="metric-countries">0</span>
+              <span class="metric-lbl">Countries</span>
+            </div>
           </div>
-        </div>
 
-        <!-- Pagination Controls -->
-        <div class="pagination-container" id="pagination-controls" style="display: none;">
-          <button id="btn-prev-page" class="btn btn-pagination" disabled><i class="fa-solid fa-chevron-left"></i> Previous</button>
-          <span class="pagination-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></span>
-          <button id="btn-next-page" class="btn btn-pagination">Next <i class="fa-solid fa-chevron-right"></i></button>
+          <!-- Charts Layout Grid -->
+          <div class="analytics-charts-grid">
+            <div class="chart-card">
+              <h3><i class="fa-solid fa-euro-sign text-primary"></i> Tuition Fee Distribution</h3>
+              <div class="chart-container">
+                <canvas id="chart-fee"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3><i class="fa-solid fa-award text-success"></i> Degree Levels</h3>
+              <div class="chart-container">
+                <canvas id="chart-degree"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3><i class="fa-solid fa-globe text-warning"></i> Top 10 Countries</h3>
+              <div class="chart-container">
+                <canvas id="chart-country"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3><i class="fa-solid fa-briefcase text-info"></i> Study Modes</h3>
+              <div class="chart-container">
+                <canvas id="chart-study-mode"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -201,11 +309,14 @@
       </div>
 
       <div class="drawer-actions">
-        <button id="btn-export-csv" class="btn btn-success flex-1">
-          <i class="fa-solid fa-file-csv"></i> Export to CSV
+        <button id="btn-compare-programs" class="btn btn-warning flex-1">
+          <i class="fa-solid fa-scale-balanced"></i> Compare
         </button>
-        <button id="btn-copy-clipboard" class="btn btn-primary flex-1">
-          <i class="fa-solid fa-copy"></i> Copy Summary
+        <button id="btn-export-csv" class="btn btn-success flex-1" title="Export to CSV">
+          <i class="fa-solid fa-file-csv"></i> CSV
+        </button>
+        <button id="btn-copy-clipboard" class="btn btn-primary flex-1" title="Copy summary">
+          <i class="fa-solid fa-copy"></i> Copy
         </button>
         <button id="btn-clear-favorites" class="btn btn-danger" title="Clear all selections">
           <i class="fa-solid fa-trash-can"></i>
@@ -232,9 +343,23 @@
 
   </div>
 
+  <!-- Comparison Modal -->
+  <div class="modal-overlay" id="comparison-modal-overlay"></div>
+  <div class="comparison-modal" id="comparison-modal">
+    <div class="modal-header">
+      <h2><i class="fa-solid fa-scale-balanced text-primary"></i> Compare Shortlisted Programs</h2>
+      <button class="btn-close" id="btn-close-comparison-modal" aria-label="Close comparison"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="comparison-table-wrapper" id="comparison-table-wrapper">
+        <!-- Comparison table is dynamically generated here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Loaded Scraped Programs Data (creates window.PROGRAMS_DATA) -->
-  <script src="programs-data.js?v=1.5"></script>
+  <script src="programs-data.js?v=1.6"></script>
   <!-- Main Application Logic -->
-  <script src="app.js?v=1.5"></script>
+  <script src="app.js?v=1.6"></script>
 </body>
 </html>
