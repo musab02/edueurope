@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    // Redirect 404s back to index for GitHub Pages SPA support
+    sessionStorage.setItem('redirect', location.pathname + location.search + location.hash);
+    location.replace('/edubridge/');
+  </script>
+</head>
+<body></body>
+</html>

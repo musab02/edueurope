@@ -1015,12 +1015,47 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: auto;
 }
 
-/* Responsive Grid Media Queries */
+/* ==========================================================================
+   Mobile Responsiveness — Phase 8
+   ========================================================================== */
+
+/* Header Actions group (holds filter toggle + shortlist button) */
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Mobile filter toggle button — hidden on desktop */
+.mobile-filter-btn {
+  display: none;
+}
+
+/* Sidebar Close button — hidden on desktop */
+.sidebar-close-btn {
+  display: none;
+}
+
+/* Mobile sidebar overlay — hidden on desktop */
+.mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 490;
+}
+
+.mobile-sidebar-overlay.open {
+  display: block;
+}
+
+/* ---- 1200px breakpoint: sidebar stacks above content ---- */
 @media (max-width: 1200px) {
   .app-main {
     flex-direction: column;
   }
-  
+
   .sidebar {
     width: 100%;
     height: auto;
@@ -1028,50 +1063,165 @@ h1, h2, h3, h4, h5, h6 {
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .content-area {
     height: auto;
   }
 }
 
+/* ---- 768px breakpoint: mobile layout ---- */
 @media (max-width: 768px) {
+  /* Header collapses to two rows */
   .header-content {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
   }
-  
+
+  .logo-area {
+    flex: 1;
+  }
+
   .stats-banner {
     width: 100%;
     justify-content: space-around;
+    order: 3;
   }
-  
-  .btn-drawer-toggle {
+
+  .header-actions {
     width: 100%;
+    order: 2;
+    justify-content: flex-end;
   }
-  
+
+  /* Show the mobile filter toggle */
+  .mobile-filter-btn {
+    display: inline-flex;
+  }
+
+  /* Sidebar becomes a fixed slide-in drawer on mobile */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -340px;
+    width: 320px;
+    max-width: 90vw;
+    height: 100%;
+    z-index: 500;
+    border-right: 1px solid var(--border-color);
+    border-bottom: none;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .sidebar.mobile-open {
+    left: 0;
+  }
+
+  /* Show close button inside sidebar on mobile */
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: var(--transition-fast);
+  }
+
+  .sidebar-close-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--primary);
+  }
+
+  /* Shortlist drawer goes full width on mobile */
   .shortlist-drawer {
     width: 100%;
     right: -100%;
   }
-  
+
+  /* Single-column card grid */
   .programs-grid {
     grid-template-columns: 1fr;
   }
-  
+
+  /* List mode cards stack vertically */
   .programs-list-mode .program-card {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
-  
+
   .programs-list-mode .metadata-grid {
     padding: 0;
   }
-  
+
   .programs-list-mode .card-actions {
     justify-content: flex-start;
   }
+
+  /* Compact analytics metrics on mobile */
+  .analytics-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Full-width comparison modal on mobile */
+  .comparison-modal {
+    width: 98%;
+    max-height: 90vh;
+  }
 }
+
+/* ---- 480px breakpoint: small phones ---- */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 1rem;
+  }
+
+  .main-title {
+    font-size: 1.4rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .analytics-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .metric-val {
+    font-size: 1.75rem;
+  }
+
+  .programs-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .app-tabs {
+    gap: 0.5rem;
+  }
+
+  .tab-btn {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+  }
+}
+
+
 
 /* University Autocomplete Styles */
 .autocomplete-container {

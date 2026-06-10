@@ -3,24 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>European English-Taught Programs Explorer - Free Search & Shortlist</title>
+  <title>EduBridge Europe — 20,700+ English-Taught Programs in 35 Countries</title>
   <meta name="description" content="Explore 20,700+ English-taught Bachelor, Master, and PhD programs in Germany, Ireland, Greece, Italy, Sweden, Finland, France, Denmark, Austria, Czechia, Poland, Estonia, Hungary, Spain, Portugal, Belgium, Switzerland, Norway, Netherlands, Serbia, Turkey, Liechtenstein, Russia, Lithuania, Romania, Slovenia, Bulgaria, Croatia, Latvia, Slovakia, Cyprus, Malta, Iceland, Luxembourg, and the United Kingdom. Filter by country, city, degree, tuition fee, and study mode, and export your shortlist to CSV.">
-  
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://musab02.github.io/edubridge/">
+  <meta property="og:title" content="EduBridge Europe — 20,700+ English-Taught Programs">
+  <meta property="og:description" content="Free tool for students from developing countries to explore English-taught programs across 35 European countries. Filter, shortlist, compare, and export.">
+  <meta property="og:image" content="https://musab02.github.io/edubridge/og-preview.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EduBridge Europe — 20,700+ English-Taught Programs">
+  <meta name="twitter:description" content="Free tool for students from developing countries to explore English-taught programs across 35 European countries.">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://musab02.github.io/edubridge/">
+
+  <!-- GitHub Pages 404 redirect handler -->
+  <script>
+    (function() {
+      var redirect = sessionStorage.getItem('redirect');
+      if (redirect) {
+        sessionStorage.removeItem('redirect');
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
+
   <!-- Google Fonts: Inter and Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+
   <!-- FontAwesome Icons for modern visuals -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=1.6">
-  
+  <link rel="stylesheet" href="styles.css?v=1.7">
+
   <!-- Chart.js CDN for Visual Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body class="dark-mode">
+
 
   <!-- Main App Container -->
   <div class="app-layout">
@@ -56,20 +84,35 @@
           </div>
         </div>
 
-        <!-- Shortlist Trigger -->
-        <button id="btn-bookmark-drawer-toggle" class="btn btn-primary btn-drawer-toggle" aria-label="Open shortlist">
-          <i class="fa-solid fa-star"></i>
-          <span>My Shortlist</span>
-          <span class="badge" id="shortlist-count">0</span>
-        </button>
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <!-- Mobile Filter Toggle -->
+          <button id="btn-mobile-filter-toggle" class="btn btn-secondary mobile-filter-btn" aria-label="Open filters">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Filters</span>
+          </button>
+          <!-- Shortlist Trigger -->
+          <button id="btn-bookmark-drawer-toggle" class="btn btn-primary btn-drawer-toggle" aria-label="Open shortlist">
+            <i class="fa-solid fa-star"></i>
+            <span>My Shortlist</span>
+            <span class="badge" id="shortlist-count">0</span>
+          </button>
+        </div>
       </div>
     </header>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay"></div>
 
     <!-- Main Workspace -->
     <main class="app-main">
       
       <!-- Left Search & Filter Sidebar -->
       <aside class="sidebar" id="sidebar-filters">
+        <!-- Mobile Close Button -->
+        <button class="sidebar-close-btn" id="btn-close-sidebar" aria-label="Close filters">
+          <i class="fa-solid fa-xmark"></i> Close Filters
+        </button>
         <div class="sidebar-section">
           <h2><i class="fa-solid fa-magnifying-glass"></i> Search</h2>
           <div class="search-box">
@@ -308,7 +351,7 @@
         <button id="btn-close-drawer" class="btn-close" aria-label="Close shortlist"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div class="drawer-actions">
+      <div class="drawer-actions" style="flex-wrap: wrap;">
         <button id="btn-compare-programs" class="btn btn-warning flex-1">
           <i class="fa-solid fa-scale-balanced"></i> Compare
         </button>
@@ -317,6 +360,9 @@
         </button>
         <button id="btn-copy-clipboard" class="btn btn-primary flex-1" title="Copy summary">
           <i class="fa-solid fa-copy"></i> Copy
+        </button>
+        <button id="btn-export-ical" class="btn btn-secondary flex-1" title="Export all deadlines to calendar (.ics)">
+          <i class="fa-regular fa-calendar-plus"></i> Calendar
         </button>
         <button id="btn-clear-favorites" class="btn btn-danger" title="Clear all selections">
           <i class="fa-solid fa-trash-can"></i>
@@ -358,8 +404,9 @@
   </div>
 
   <!-- Loaded Scraped Programs Data (creates window.PROGRAMS_DATA) -->
-  <script src="programs-data.js?v=1.6"></script>
+  <script src="programs-data.js?v=1.7"></script>
   <!-- Main Application Logic -->
-  <script src="app.js?v=1.6"></script>
+  <script src="app.js?v=1.7"></script>
 </body>
 </html>
+

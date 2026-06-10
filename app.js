@@ -619,6 +619,28 @@ function setupEventListeners() {
   elBtnCloseDrawer.addEventListener('click', closeDrawer);
   elDrawerOverlay.addEventListener('click', closeDrawer);
 
+  // Mobile Sidebar toggle
+  const elSidebar = document.getElementById('sidebar-filters');
+  const elMobileFilterToggle = document.getElementById('btn-mobile-filter-toggle');
+  const elBtnCloseSidebar = document.getElementById('btn-close-sidebar');
+  const elMobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+
+  const openMobileSidebar = () => {
+    elSidebar.classList.add('mobile-open');
+    elMobileSidebarOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMobileSidebar = () => {
+    elSidebar.classList.remove('mobile-open');
+    elMobileSidebarOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  elMobileFilterToggle.addEventListener('click', openMobileSidebar);
+  elBtnCloseSidebar.addEventListener('click', closeMobileSidebar);
+  elMobileSidebarOverlay.addEventListener('click', closeMobileSidebar);
+
   // Compare Selected Button
   elBtnComparePrograms.addEventListener('click', () => {
     if (favorites.length === 0) {
@@ -660,6 +682,12 @@ function setupEventListeners() {
 
   elBtnExportCSV.addEventListener('click', exportToCSV);
   elBtnCopyClipboard.addEventListener('click', copyToClipboard);
+
+  // iCal / Calendar export for whole shortlist
+  const elBtnExportIcal = document.getElementById('btn-export-ical');
+  if (elBtnExportIcal) {
+    elBtnExportIcal.addEventListener('click', downloadShortlistICS);
+  }
 }
 
 // 4. Filtering, Sorting, and Core Calculation
@@ -831,6 +859,10 @@ function renderPrograms() {
         <button class="btn btn-secondary btn-bookmark ${isFav ? 'active' : ''}" data-action="fav" title="${isFav ? 'Remove from shortlist' : 'Add to shortlist'}">
           <i class="fa-${isFav ? 'solid' : 'regular'} fa-star"></i>
         </button>
+        ${prog.deadlines && prog.deadlines.length > 0 ? `
+        <button class="btn btn-secondary btn-cal" data-action="cal" title="Add deadline to calendar">
+          <i class="fa-regular fa-calendar-plus"></i>
+        </button>` : ''}
         <a href="${prog.link}" target="_blank" class="btn btn-primary flex-1">
           View Program <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
@@ -843,6 +875,15 @@ function renderPrograms() {
       e.preventDefault();
       toggleFavorite(prog.id);
     });
+
+    // Add event listener to calendar button (if exists)
+    const btnCal = card.querySelector('[data-action="cal"]');
+    if (btnCal) {
+      btnCal.addEventListener('click', (e) => {
+        e.preventDefault();
+        downloadICS(prog);
+      });
+    }
 
     elProgramsContainer.appendChild(card);
   });
@@ -1309,3 +1350,174 @@ function renderComparisonTable() {
     });
   });
 }
+
+// ============================================================
+// 12. iCal Deadline Export
+// ============================================================
+
+/**
+ * Try to parse a deadline string like "15 October 2025", "Oct 15, 2025",
+ * "2025-10-15" etc. into a YYYYMMDD string for iCal DTSTART/DTEND.
+ * Falls back to today + 30 days if unparseable.
+ */
+function parseDateToICS(dateStr) {
+  if (!dateStr) return null;
+
+  // Already ISO: 2025-10-15
+  const isoMatch = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    return `${isoMatch[1]}${isoMatch[2]}${isoMatch[3]}`;
+  }
+
+  // Common English formats: "15 October 2025" or "October 15, 2025" or "Oct 15, 2025"
+  const MONTHS = {
+    jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06',
+    jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12',
+    january: '01', february: '02', march: '03', april: '04', june: '06',
+    july: '07', august: '08', september: '09', october: '10', november: '11', december: '12'
+  };
+
+  const parts = dateStr.replace(',', '').toLowerCase().split(/\s+/);
+  let year, month, day;
+
+  for (const part of parts) {
+    if (MONTHS[part]) month = MONTHS[part];
+    else if (/^\d{4}$/.test(part)) year = part;
+    else if (/^\d{1,2}$/.test(part)) day = part.padStart(2, '0');
+  }
+
+  if (year && month && day) return `${year}${month}${day}`;
+
+  // Fallback: today + 30 days
+  const fallback = new Date();
+  fallback.setDate(fallback.getDate() + 30);
+  return fallback.toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+/**
+ * Build a VCALENDAR string with one VEVENT per deadline for the program.
+ */
+function generateICSContent(prog) {
+  const now = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const uid = `edubridge-${prog.id}-${Date.now()}`;
+
+  const deadlines = prog.deadlines && prog.deadlines.length > 0
+    ? prog.deadlines
+    : ['Application Deadline'];
+
+  const events = deadlines.map((dl, idx) => {
+    const dtstart = parseDateToICS(dl) || parseDateToICS('');
+    // End = same day (all-day event)
+    const dtend = dtstart;
+
+    // Escape special chars for iCal
+    const safeDl = dl.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+    const safeTitle = prog.title.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+    const safeUni = prog.university.replace(/[\\;,]/g, (c) => `\\${c}`);
+
+    return [
+      'BEGIN:VEVENT',
+      `UID:${uid}-${idx}`,
+      `DTSTAMP:${now}`,
+      `DTSTART;VALUE=DATE:${dtstart}`,
+      `DTEND;VALUE=DATE:${dtend}`,
+      `SUMMARY:📅 ${safeTitle} – ${safeUni} Deadline`,
+      `DESCRIPTION:Program: ${safeTitle}\\nUniversity: ${safeUni}\\nCountry: ${prog.country}\\nDeadline: ${safeDl}\\nLink: ${prog.link}`,
+      `URL:${prog.link}`,
+      `CATEGORIES:EDUCATION,DEADLINE`,
+      'END:VEVENT'
+    ].join('\r\n');
+  }).join('\r\n');
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//EduBridge Europe//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    events,
+    'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+/**
+ * Trigger browser download of a .ics file for the given program.
+ */
+function downloadICS(prog) {
+  const content = generateICSContent(prog);
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `edubridge_deadline_${prog.id}.ics`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showToast('Calendar event downloaded!');
+}
+
+/**
+ * Export ALL shortlisted programs as a single .ics multi-event file.
+ */
+function downloadShortlistICS() {
+  if (favorites.length === 0) {
+    showToast('Add programs to shortlist first');
+    return;
+  }
+
+  const selectedPrograms = favorites.map(id => programs.find(p => p.id === id)).filter(Boolean);
+  const now = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+
+  const allEvents = selectedPrograms.flatMap(prog => {
+    const deadlines = prog.deadlines && prog.deadlines.length > 0
+      ? prog.deadlines : ['Application Deadline'];
+
+    return deadlines.map((dl, idx) => {
+      const dtstart = parseDateToICS(dl);
+      const safeDl = dl.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+      const safeTitle = prog.title.replace(/[\\;,]/g, (c) => `\\${c}`).replace(/\n/g, '\\n');
+      const safeUni = prog.university.replace(/[\\;,]/g, (c) => `\\${c}`);
+
+      return [
+        'BEGIN:VEVENT',
+        `UID:edubridge-${prog.id}-${idx}-${Date.now()}`,
+        `DTSTAMP:${now}`,
+        `DTSTART;VALUE=DATE:${dtstart}`,
+        `DTEND;VALUE=DATE:${dtstart}`,
+        `SUMMARY:📅 ${safeTitle} Deadline`,
+        `DESCRIPTION:University: ${safeUni}\\nCountry: ${prog.country}\\nDeadline: ${safeDl}\\nLink: ${prog.link}`,
+        `URL:${prog.link}`,
+        'CATEGORIES:EDUCATION,DEADLINE',
+        'END:VEVENT'
+      ].join('\r\n');
+    });
+  }).join('\r\n');
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//EduBridge Europe//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    allEvents,
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `edubridge_all_deadlines_${new Date().toISOString().slice(0,10)}.ics`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showToast('All deadlines exported to calendar!');
+}
+
